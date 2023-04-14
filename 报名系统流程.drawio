@@ -1,0 +1,76 @@
+<mxfile host="www.draw.io" modified="2023-04-14T05:03:08.100Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="7up_X_HXJcKWB6dv9A6W" version="21.1.7" type="device">
+  <diagram name="第 1 页" id="U8oJPlie612FKu8XoPZR">
+    <mxGraphModel dx="1434" dy="699" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EFKEFUUNbAqQDUn5yAvd-2" target="EFKEFUUNbAqQDUn5yAvd-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-2" value="提交/修改&lt;br&gt;报名信息" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="170" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EFKEFUUNbAqQDUn5yAvd-5" target="EFKEFUUNbAqQDUn5yAvd-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-5" value="登录" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EFKEFUUNbAqQDUn5yAvd-7" target="EFKEFUUNbAqQDUn5yAvd-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-20" value="否" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="EFKEFUUNbAqQDUn5yAvd-11">
+          <mxGeometry x="0.0857" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EFKEFUUNbAqQDUn5yAvd-7" target="EFKEFUUNbAqQDUn5yAvd-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-21" value="是" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="EFKEFUUNbAqQDUn5yAvd-13">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-7" value="管理员&lt;br&gt;是否已开放&lt;br&gt;面试场次" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="380" y="270" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-10" value="面试场次未开放" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="550" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EFKEFUUNbAqQDUn5yAvd-12" target="EFKEFUUNbAqQDUn5yAvd-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-19" value="面试完成" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="EFKEFUUNbAqQDUn5yAvd-17">
+          <mxGeometry x="-0.1636" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-12" value="查看/选择/修改&lt;br&gt;面试场次" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="370" y="450" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-14" value="本场面试开始前一天不允许修改" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;position2=0;" vertex="1" parent="1">
+          <mxGeometry x="490" y="380" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-15" value="选择面试场次后&lt;br&gt;不允许修改个人信息" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;position2=0;" vertex="1" parent="1">
+          <mxGeometry x="490" y="110" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-16" value="查看面试结果：&lt;br&gt;1. 评审中&lt;br&gt;2. 已通过&lt;br&gt;3. 未通过" style="whiteSpace=wrap;html=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="370" y="620" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-18" value="以前的话是通过了打电话&lt;br&gt;没通过也不通知&lt;br&gt;这里有没有面试结果都行" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;position2=0;" vertex="1" parent="1">
+          <mxGeometry x="490" y="530" width="150" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EFKEFUUNbAqQDUn5yAvd-22" target="EFKEFUUNbAqQDUn5yAvd-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-22" value="管理员" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="300" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="EFKEFUUNbAqQDUn5yAvd-27" value="1. 设置具体面试场次&lt;br&gt;2. 设置开放场次时间&lt;br&gt;3. 导出某场学生信息&lt;br&gt;4. 设置学生面试结果&lt;br&gt;（设置结果手动改数据库也行，反正不超过30人）" style="whiteSpace=wrap;html=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="120" y="277.5" width="180" height="105" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
