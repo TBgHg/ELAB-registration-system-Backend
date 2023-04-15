@@ -1,26 +1,61 @@
 package configs
 
 import (
+	log "ELAB-registration-system-Backend/common/logger"
 	"github.com/BurntSushi/toml"
 	"os"
 )
 
+type httpConfig struct {
+	Addr string `toml:"addr"`
+}
+
+type dbConfig struct {
+	Addr     string `toml:"addr"`
+	User     string `toml:"user"`
+	Pwd      string `toml:"pwd"`
+	Database string `toml:"database"`
+	DSN      string `toml:"dsn"`
+}
+
+type redisConfig struct {
+	Addr string `toml:"addr"`
+	Pwd  string `toml:"pwd"`
+	DB   int    `toml:"db"`
+}
+
 type Config struct {
+	// 服务端口
+	Http  *httpConfig  `toml:"http"`
+	DB    *dbConfig    `toml:"db"`
+	Redis *redisConfig `toml:"redis"`
+}
+
+var (
+	conf Config
+	err  error
+)
+
+func Init() {
+	loadConfig()
+}
+
+func GetConfig() (*Config, error) {
+	return &conf, err
 }
 
 func loadConfig() {
-	var conf = new(Config)
-	files := []string{"http.toml", "db.toml", "redis.toml"}
-	for _, v := range files {
-		data, err := os.ReadFile(v)
-		if err != nil {
-			// 处理文件读取错误
-		}
-		if err = toml.Unmarshal(data, &conf); err != nil {
-			// 处理解析错误
-		}
+	var data []byte
+	// 读取配置文件
+	data, err = os.ReadFile("./configs/config.toml")
+	if err != nil {
+		log.Logger.Error("loadConfig os.ReadFile failed err:" + err.Error())
+		return
 	}
-
-	// 使用 conf 对象
-	// ...
+	err = toml.Unmarshal(data, &conf)
+	if err != nil {
+		log.Logger.Error("loadConfig toml.Unmarshal failed err:" + err.Error())
+		return
+	}
+	return
 }
