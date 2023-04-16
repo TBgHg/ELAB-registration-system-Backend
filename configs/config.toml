@@ -1,5 +1,7 @@
 [http]
 addr = "0.0.0.0:8080"
+[htto.OAuth]
+issuer = "https://auth.zeithrold.com"
 
 [db]
 addr = "127.0.0.1:3306"

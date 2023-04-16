@@ -6,8 +6,13 @@ import (
 	"os"
 )
 
+type oauthConfig struct {
+	Issuer string `toml:"issuer"`
+}
+
 type httpConfig struct {
-	Addr string `toml:"addr"`
+	Addr  string       `toml:"addr"`
+	OAuth *oauthConfig `toml:"oauth"`
 }
 
 type dbConfig struct {

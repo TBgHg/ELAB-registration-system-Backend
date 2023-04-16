@@ -16,8 +16,6 @@ type Service struct {
 	Rdb  *redis.Client
 }
 
-var svc *Service
-
 func NewService(conf *configs.Config) (*Service, error) {
 	dsn := fmt.Sprintf(conf.DB.DSN, conf.DB.User, conf.DB.Pwd, conf.DB.Addr, conf.DB.Database)
 	gormDB, err := gorm.Open(mysql.Open(dsn))
@@ -31,6 +29,12 @@ func NewService(conf *configs.Config) (*Service, error) {
 		Password: conf.Redis.Pwd,
 		DB:       conf.Redis.DB,
 	})
+
+	err = OAuth2Init(conf.Http.OAuth.Issuer)
+	if err != nil {
+		log.Logger.Error("NewService OAuth2Init failed err:" + err.Error())
+		return nil, err
+	}
 
 	return &Service{
 		Conf: conf,

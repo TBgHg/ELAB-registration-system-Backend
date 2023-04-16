@@ -9,9 +9,11 @@ var svc *service.Service
 
 func Init(r *gin.Engine, s *service.Service) {
 	svc = s
-
+	r.Use(gin.Logger(), gin.Recovery())
 	r.GET("/ping", func(c *gin.Context) { c.JSON(200, gin.H{"message": "pong"}) })
-	// 添加OAuth中间件
+
+	// 添加中间件，验证token
+	r.GET("/callback", service.VerifyToken(), func(c *gin.Context) { c.JSON(200, gin.H{"message": "pong"}) })
 
 	signup := r.Group("/signup")
 	{
