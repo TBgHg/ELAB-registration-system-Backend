@@ -28,12 +28,14 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	tableName := _user.userDo.TableName()
 	_user.ALL = field.NewAsterisk(tableName)
 	_user.ID = field.NewInt32(tableName, "id")
+	_user.OpenID = field.NewString(tableName, "open_id")
 	_user.Name = field.NewString(tableName, "name")
 	_user.StudentID = field.NewString(tableName, "student_id")
-	_user.Gender = field.NewBool(tableName, "gender")
+	_user.Gender = field.NewInt32(tableName, "gender")
 	_user.Class = field.NewString(tableName, "class")
 	_user.Position = field.NewString(tableName, "position")
 	_user.Mobile = field.NewString(tableName, "mobile")
+	_user.Mail = field.NewString(tableName, "mail")
 	_user.Group = field.NewString(tableName, "group")
 	_user.Introduction = field.NewString(tableName, "introduction")
 	_user.Awards = field.NewString(tableName, "awards")
@@ -51,12 +53,14 @@ type user struct {
 
 	ALL          field.Asterisk
 	ID           field.Int32  // 主键
+	OpenID       field.String // OAuth2标识
 	Name         field.String // 姓名
 	StudentID    field.String // 学号
-	Gender       field.Bool   // 性别：0表示女，1表示男
+	Gender       field.Int32  // 性别：0表示女，1表示男
 	Class        field.String // 班级
 	Position     field.String // 学生职务
 	Mobile       field.String // 电话号码
+	Mail         field.String // 邮箱
 	Group        field.String // 报名组别
 	Introduction field.String // 个人简介
 	Awards       field.String // 所获奖项
@@ -80,12 +84,14 @@ func (u user) As(alias string) *user {
 func (u *user) updateTableName(table string) *user {
 	u.ALL = field.NewAsterisk(table)
 	u.ID = field.NewInt32(table, "id")
+	u.OpenID = field.NewString(table, "open_id")
 	u.Name = field.NewString(table, "name")
 	u.StudentID = field.NewString(table, "student_id")
-	u.Gender = field.NewBool(table, "gender")
+	u.Gender = field.NewInt32(table, "gender")
 	u.Class = field.NewString(table, "class")
 	u.Position = field.NewString(table, "position")
 	u.Mobile = field.NewString(table, "mobile")
+	u.Mail = field.NewString(table, "mail")
 	u.Group = field.NewString(table, "group")
 	u.Introduction = field.NewString(table, "introduction")
 	u.Awards = field.NewString(table, "awards")
@@ -114,14 +120,16 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 13)
+	u.fieldMap = make(map[string]field.Expr, 15)
 	u.fieldMap["id"] = u.ID
+	u.fieldMap["open_id"] = u.OpenID
 	u.fieldMap["name"] = u.Name
 	u.fieldMap["student_id"] = u.StudentID
 	u.fieldMap["gender"] = u.Gender
 	u.fieldMap["class"] = u.Class
 	u.fieldMap["position"] = u.Position
 	u.fieldMap["mobile"] = u.Mobile
+	u.fieldMap["mail"] = u.Mail
 	u.fieldMap["group"] = u.Group
 	u.fieldMap["introduction"] = u.Introduction
 	u.fieldMap["awards"] = u.Awards

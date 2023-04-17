@@ -31,8 +31,8 @@ func newApplication(db *gorm.DB, opts ...gen.DOOption) application {
 	_application.UserID = field.NewInt32(tableName, "user_id")
 	_application.CreateTime = field.NewTime(tableName, "create_time")
 	_application.InterviewID = field.NewInt32(tableName, "interview_id")
-	_application.State = field.NewBool(tableName, "state")
-	_application.InterviewRes = field.NewBool(tableName, "interview_res")
+	_application.State = field.NewInt32(tableName, "state")
+	_application.InterviewRes = field.NewInt32(tableName, "interview_res")
 	_application.CreatedAt = field.NewTime(tableName, "created_at")
 	_application.UpdatedAt = field.NewTime(tableName, "updated_at")
 
@@ -49,8 +49,8 @@ type application struct {
 	UserID       field.Int32 // 用户ID
 	CreateTime   field.Time  // 报名时间
 	InterviewID  field.Int32 // 面试场次ID
-	State        field.Bool  // 状态：0表示已取消，1表示正常状态
-	InterviewRes field.Bool  // 面试结果：0表示评审中/未面试，-1表示未通过，1表示通过
+	State        field.Int32 // 状态：0表示已取消，1表示正常状态
+	InterviewRes field.Int32 // 面试结果：0表示评审中/未面试，-1表示未通过，1表示通过
 	CreatedAt    field.Time  // 创建时间
 	UpdatedAt    field.Time  // 最后修改时间
 
@@ -73,8 +73,8 @@ func (a *application) updateTableName(table string) *application {
 	a.UserID = field.NewInt32(table, "user_id")
 	a.CreateTime = field.NewTime(table, "create_time")
 	a.InterviewID = field.NewInt32(table, "interview_id")
-	a.State = field.NewBool(table, "state")
-	a.InterviewRes = field.NewBool(table, "interview_res")
+	a.State = field.NewInt32(table, "state")
+	a.InterviewRes = field.NewInt32(table, "interview_res")
 	a.CreatedAt = field.NewTime(table, "created_at")
 	a.UpdatedAt = field.NewTime(table, "updated_at")
 
