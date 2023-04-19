@@ -13,7 +13,7 @@ func Init(r *gin.Engine, s *service.Service) {
 	r.GET("/ping", func(c *gin.Context) { c.JSON(200, gin.H{"message": "pong"}) })
 
 	// 添加中间件，验证token
-	r.GET("/callback", service.VerifyToken(), func(c *gin.Context) { c.JSON(200, gin.H{"message": "pong"}) })
+	//r.GET("/callback", service.VerifyToken(), func(c *gin.Context) { c.JSON(200, gin.H{"message": "pong"}) })
 
 	signup := r.Group("/signup")
 	{

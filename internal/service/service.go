@@ -30,7 +30,7 @@ func NewService(conf *configs.Config) (*Service, error) {
 		DB:       conf.Redis.DB,
 	})
 
-	err = OAuth2Init(conf.Http.OAuth.Issuer)
+	//err = OAuth2Init(conf.Http.OAuth.Issuer)
 	if err != nil {
 		log.Logger.Error("NewService OAuth2Init failed err:" + err.Error())
 		return nil, err

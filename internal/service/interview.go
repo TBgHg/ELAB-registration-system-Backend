@@ -36,6 +36,18 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 	if req.InterviewSessionID == 0 {
 		// 1.将application表中的user_id、interview_session_id对应的行的state置为0
 		// 2.将interview表中的interview_session_id对应的行的applied_num减一
+		result, unlock := s.GetLock(int(req.OldInterviewSessionID))
+		if result {
+			defer unlock()
+		} else {
+			log.Logger.Errorf(c, "InterviewSelect s.GetLock failed req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, errors.New("获取锁失败"))
+			return &model.InterviewSelectResp{
+				CommonResp: &model.CommonResp{
+					Code: 102,
+					Msg:  "获取锁失败",
+				},
+			}
+		}
 		err = s.db.Transaction(func(tx *dao.Query) (err error) {
 			a := tx.Application
 			_, err = tx.Application.WithContext(c).Where(a.UserID.Eq(userID)).Update(a.State, 0)
@@ -68,6 +80,24 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 	}
 
 	// 选择或更新面试场次
+	result, unlock := s.GetLock(int(req.OldInterviewSessionID))
+	if result {
+		defer unlock()
+	}
+	result2, unlock2 := s.GetLock(int(req.InterviewSessionID))
+	if result2 {
+		defer unlock2()
+	}
+	if !result || !result2 {
+		log.Logger.Errorf(c, "InterviewSelect s.GetLock failed req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, errors.New("获取锁失败"))
+		return &model.InterviewSelectResp{
+			CommonResp: &model.CommonResp{
+				Code: 102,
+				Msg:  "获取锁失败",
+			},
+		}
+	}
+
 	err = s.db.Transaction(func(tx *dao.Query) (err error) {
 		a := tx.Application
 		application, err2 := tx.Application.WithContext(c).Where(a.UserID.Eq(userID)).First()
