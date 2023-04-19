@@ -1,11 +1,11 @@
 package service
 
 import (
+	log "ELAB-registration-system-Backend/logger"
 	"context"
 	"fmt"
 	"net/http"
 
-	log "ELAB-registration-system-Backend/common/logger"
 	"ELAB-registration-system-Backend/internal/model"
 
 	"github.com/coreos/go-oidc/v3/oidc"

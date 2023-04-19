@@ -1,9 +1,9 @@
 package service
 
 import (
-	log "ELAB-registration-system-Backend/common/logger"
 	"ELAB-registration-system-Backend/configs"
 	"ELAB-registration-system-Backend/internal/dao"
+	log "ELAB-registration-system-Backend/logger"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"

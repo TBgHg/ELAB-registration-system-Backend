@@ -1,10 +1,10 @@
 package main
 
 import (
-	log "ELAB-registration-system-Backend/common/logger"
 	"ELAB-registration-system-Backend/configs"
 	"ELAB-registration-system-Backend/internal/server/http"
 	"ELAB-registration-system-Backend/internal/service"
+	log "ELAB-registration-system-Backend/logger"
 	"github.com/gin-gonic/gin"
 )
 

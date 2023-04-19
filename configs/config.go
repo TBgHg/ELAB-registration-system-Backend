@@ -1,7 +1,7 @@
 package configs
 
 import (
-	log "ELAB-registration-system-Backend/common/logger"
+	log "ELAB-registration-system-Backend/logger"
 	"github.com/BurntSushi/toml"
 	"os"
 )

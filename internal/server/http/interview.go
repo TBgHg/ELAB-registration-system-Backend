@@ -2,34 +2,26 @@ package http
 
 import (
 	"ELAB-registration-system-Backend/internal/model"
+	log "ELAB-registration-system-Backend/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func interviewSelect(c *gin.Context) {
-	req, err := new(model.InterviewSelectReq), error(nil)
-	if err = c.Bind(req); err != nil {
-		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误"})
+	req := new(model.InterviewSelectReq)
+	if err := c.BindJSON(req); err != nil {
+		log.Logger.Errorf(c, "interviewSelect c.BindJSON err(%v)", err)
+		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误,BindJSON失败"})
 		return
 	}
-	svc.InterviewSelect()
-	c.JSON(200, gin.H{"message": "pong"})
+	if !req.Validate() {
+		log.Logger.Infof(c, "interviewSelect req.Validate failed req(%+v)", req)
+		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误,Validate失败"})
+		return
+	}
+	c.JSON(http.StatusOK, svc.InterviewSelect(c, req))
 }
 
 func interviewGet(c *gin.Context) {
-	req, err := new(model.InterviewGetReq), error(nil)
-	if err = c.Bind(req); err != nil {
-		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误"})
-		return
-	}
-	c.JSON(200, gin.H{"message": "pong"})
-}
-
-func interviewUpdate(c *gin.Context) {
-	req, err := new(model.InterviewUpdateReq), error(nil)
-	if err = c.Bind(req); err != nil {
-		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误"})
-		return
-	}
-	c.JSON(200, gin.H{"message": "pong"})
+	c.JSON(200, svc.InterviewGet(c))
 }
