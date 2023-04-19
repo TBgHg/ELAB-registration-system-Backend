@@ -2,8 +2,9 @@ package configs
 
 import (
 	log "ELAB-registration-system-Backend/logger"
-	"github.com/BurntSushi/toml"
 	"os"
+
+	"github.com/BurntSushi/toml"
 )
 
 type oauthConfig struct {
@@ -13,6 +14,10 @@ type oauthConfig struct {
 type httpConfig struct {
 	Addr  string       `toml:"addr"`
 	OAuth *oauthConfig `toml:"oauth"`
+}
+
+type mobileConfig struct {
+	Endpoint string `toml:"endpoint"`
 }
 
 type dbConfig struct {
@@ -29,11 +34,20 @@ type redisConfig struct {
 	DB   int    `toml:"db"`
 }
 
+type oidcConfig struct {
+	Issuer       string `toml:"issuer"`
+	ClientId     string `toml:"client_id"`
+	ClientSecret string `toml:"client_secret"`
+	RedirectUrl  string `toml:"redirect_url"`
+}
+
 type Config struct {
 	// 服务端口
-	Http  *httpConfig  `toml:"http"`
-	DB    *dbConfig    `toml:"db"`
-	Redis *redisConfig `toml:"redis"`
+	Http   *httpConfig   `toml:"http"`
+	DB     *dbConfig     `toml:"db"`
+	Redis  *redisConfig  `toml:"redis"`
+	Oidc   *oidcConfig   `toml:"oidc"`
+	Mobile *mobileConfig `toml:"mobile"`
 }
 
 var (
@@ -62,5 +76,4 @@ func loadConfig() {
 		log.Logger.Error("loadConfig toml.Unmarshal failed err:" + err.Error())
 		return
 	}
-	return
 }

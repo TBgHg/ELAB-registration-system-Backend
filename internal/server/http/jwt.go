@@ -3,9 +3,10 @@ package http
 import (
 	"ELAB-registration-system-Backend/internal/model"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"net/http"
 )
 
 func JwtMiddleware() gin.HandlerFunc {
@@ -58,6 +59,5 @@ func JwtMiddleware() gin.HandlerFunc {
 		//失效的token
 		c.JSON(http.StatusOK, model.CommonResp{Code: -1, Msg: "无效 token"})
 		c.Abort() //阻止执行
-		return
 	}
 }
