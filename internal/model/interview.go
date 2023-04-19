@@ -5,6 +5,7 @@ import "time"
 type InterviewSelectReq struct {
 	OldInterviewSessionID int32 `json:"old_interview_session_id"`
 	InterviewSessionID    int32 `json:"interview_session_id"`
+	OpenID                string
 }
 
 // Validate 验证参数，简单校验一下，就不上Validate库了

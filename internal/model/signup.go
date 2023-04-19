@@ -11,6 +11,8 @@ type SignupSubmitReq struct {
 	Introduction string `json:"introduction"`
 	Awards       string `json:"awards"`
 	Reason       string `json:"reason"`
+	OpenID       string
+	Email        string
 }
 
 type SignupSubmitResp struct {
@@ -45,6 +47,7 @@ type SignupUpdateReq struct {
 	Introduction string `json:"introduction"`
 	Awards       string `json:"awards"`
 	Reason       string `json:"reason"`
+	OpenID       string
 }
 
 type SignupUpdateResp struct {

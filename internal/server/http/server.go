@@ -14,7 +14,7 @@ func Init(r *gin.Engine, s *service.Service) {
 
 	// 添加中间件，验证token
 	//r.GET("/callback", service.VerifyToken(), func(c *gin.Context) { c.JSON(200, gin.H{"message": "pong"}) })
-
+	r.Use(JwtMiddleware())
 	signup := r.Group("/signup")
 	{
 		// 提交报名信息

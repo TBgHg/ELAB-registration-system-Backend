@@ -11,17 +11,10 @@ import (
 
 func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectReq) (resp *model.InterviewSelectResp) {
 
-	//tokenClaims := c.Value("user").(*model.TokenClaims)
-	// todo:待删除
-	tokenClaims := new(model.TokenClaims)
-	tokenClaims.OpenID = "123"
-
-	openID := tokenClaims.OpenID
-
 	u := s.db.User
-	user, err := s.db.User.WithContext(c).Where(u.OpenID.Eq(openID)).First()
+	user, err := s.db.User.WithContext(c).Where(u.OpenID.Eq(req.OpenID)).First()
 	if err != nil {
-		log.Logger.Errorf(c, "InterviewSelect req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, err)
+		log.Logger.Errorf(c, "InterviewSelect req(%v) openID(%s) err(%v)", req, req.OpenID, err)
 		resp = &model.InterviewSelectResp{
 			CommonResp: &model.CommonResp{
 				Code: 101,
@@ -40,7 +33,7 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 		if result {
 			defer unlock()
 		} else {
-			log.Logger.Errorf(c, "InterviewSelect s.GetLock failed req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, errors.New("获取锁失败"))
+			log.Logger.Errorf(c, "InterviewSelect s.GetLock failed req(%v) openID(%s) err(%v)", req, req.OpenID, errors.New("获取锁失败"))
 			return &model.InterviewSelectResp{
 				CommonResp: &model.CommonResp{
 					Code: 102,
@@ -62,7 +55,7 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 			return
 		})
 		if err != nil {
-			log.Logger.Errorf(c, "InterviewSelect req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, err)
+			log.Logger.Errorf(c, "InterviewSelect req(%v) openID(%s) err(%v)", req, req.OpenID, err)
 			return &model.InterviewSelectResp{
 				CommonResp: &model.CommonResp{
 					Code: 101,
@@ -89,7 +82,7 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 		defer unlock2()
 	}
 	if !result || !result2 {
-		log.Logger.Errorf(c, "InterviewSelect s.GetLock failed req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, errors.New("获取锁失败"))
+		log.Logger.Errorf(c, "InterviewSelect s.GetLock failed req(%v) openID(%s) err(%v)", req, req.OpenID, errors.New("获取锁失败"))
 		return &model.InterviewSelectResp{
 			CommonResp: &model.CommonResp{
 				Code: 102,
@@ -109,8 +102,7 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 					State:       1,
 					UserID:      userID,
 				}
-				err2 = tx.Application.WithContext(c).Create(application)
-				if err2 != nil {
+				if err2 = tx.Application.WithContext(c).Create(application); err2 != nil {
 					return err2
 				}
 			} else {
@@ -119,13 +111,21 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 		}
 		application.InterviewID = req.InterviewSessionID
 		application.State = 1
-		_, err = tx.Application.WithContext(c).Updates(application)
-		if err != nil {
+
+		if _, err = tx.Application.WithContext(c).Updates(application); err != nil {
 			return err
 		}
 
 		// 这里需要判断能不能选择这个新场次
 		i := tx.InterviewSession
+		first, err := tx.InterviewSession.WithContext(c).Where(i.ID.Eq(req.InterviewSessionID)).First()
+		if err != nil {
+			return err
+		}
+		if first.AppliedNum >= first.Capacity {
+			return errors.New("该场次已满")
+		}
+
 		_, err = tx.InterviewSession.WithContext(c).Where(i.ID.Eq(req.InterviewSessionID)).Update(i.AppliedNum, gorm.Expr("applied_num+?", 1))
 		if err != nil {
 			return err
@@ -141,7 +141,15 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 	})
 
 	if err != nil {
-		log.Logger.Errorf(c, "InterviewSelect req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, err)
+		if err.Error() == "该场次已满" {
+			return &model.InterviewSelectResp{
+				CommonResp: &model.CommonResp{
+					Code: 103,
+					Msg:  "该场次已满",
+				},
+			}
+		}
+		log.Logger.Errorf(c, "InterviewSelect req(%v) openID(%s) err(%v)", req, req.OpenID, err)
 		return &model.InterviewSelectResp{
 			CommonResp: &model.CommonResp{
 				Code: 101,
@@ -158,18 +166,12 @@ func (s *Service) InterviewSelect(c context.Context, req *model.InterviewSelectR
 	return
 }
 
-func (s *Service) InterviewGet(c context.Context) (resp *model.InterviewGetResp) {
-	//tokenClaims := c.Value("user").(*model.TokenClaims)
-	// todo:待删除
-	tokenClaims := new(model.TokenClaims)
-	tokenClaims.OpenID = "123"
-
-	openID := tokenClaims.OpenID
+func (s *Service) InterviewGet(c context.Context, openID string) (resp *model.InterviewGetResp) {
 
 	u := s.db.User
 	user, err := s.db.User.WithContext(c).Where(u.OpenID.Eq(openID)).First()
 	if err != nil {
-		log.Logger.Errorf(c, "InterviewGet openID(%s) err(%v)", tokenClaims.OpenID, err)
+		log.Logger.Errorf(c, "InterviewGet openID(%s) err(%v)", openID, err)
 		resp = &model.InterviewGetResp{
 			CommonResp: &model.CommonResp{
 				Code: 101,
@@ -193,7 +195,7 @@ func (s *Service) InterviewGet(c context.Context) (resp *model.InterviewGetResp)
 			}
 			return
 		}
-		log.Logger.Errorf(c, "InterviewGet openID(%s) err(%v)", tokenClaims.OpenID, err)
+		log.Logger.Errorf(c, "InterviewGet openID(%s) err(%v)", openID, err)
 		resp = &model.InterviewGetResp{
 			CommonResp: &model.CommonResp{
 				Code: 101,
@@ -207,7 +209,7 @@ func (s *Service) InterviewGet(c context.Context) (resp *model.InterviewGetResp)
 	i := s.db.InterviewSession
 	interview, err := s.db.InterviewSession.WithContext(c).Where(i.ID.Eq(interviewID)).First()
 	if err != nil {
-		log.Logger.Errorf(c, "InterviewGet openID(%s) err(%v)", tokenClaims.OpenID, err)
+		log.Logger.Errorf(c, "InterviewGet openID(%s) err(%v)", openID, err)
 		resp = &model.InterviewGetResp{
 			CommonResp: &model.CommonResp{
 				Code: 101,

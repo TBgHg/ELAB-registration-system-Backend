@@ -19,9 +19,23 @@ func interviewSelect(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误,Validate失败"})
 		return
 	}
+
+	value, exists := c.Get("openID")
+	if !exists {
+		log.Logger.Errorf(c, "signupSubmit c.Get openID err")
+		return
+	} else {
+		req.OpenID = value.(string)
+	}
+
 	c.JSON(http.StatusOK, svc.InterviewSelect(c, req))
 }
 
 func interviewGet(c *gin.Context) {
-	c.JSON(200, svc.InterviewGet(c))
+	value, exists := c.Get("openID")
+	if !exists {
+		log.Logger.Errorf(c, "signupSubmit c.Get openID err")
+		return
+	}
+	c.JSON(http.StatusOK, svc.InterviewGet(c, value.(string)))
 }

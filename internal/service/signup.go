@@ -8,21 +8,16 @@ import (
 )
 
 func (s *Service) SignupSubmit(c context.Context, req *model.SignupSubmitReq) (resp *model.SignupSubmitResp) {
-	//tokenClaims := c.Value("user").(*model.TokenClaims)
-	// todo:待删除
-	tokenClaims := new(model.TokenClaims)
-	tokenClaims.Email = "312"
-	tokenClaims.OpenID = "123"
 
 	user := &model.User{
-		OpenID:       tokenClaims.OpenID,
+		OpenID:       req.OpenID,
 		Name:         req.Name,
 		StudentID:    req.StudentID,
 		Gender:       req.Gender,
 		Class:        req.Class,
 		Position:     req.Position,
 		Mobile:       req.Mobile,
-		Mail:         tokenClaims.Email,
+		Mail:         req.Email,
 		Group:        req.Group,
 		Introduction: req.Introduction,
 		Awards:       req.Awards,
@@ -30,7 +25,7 @@ func (s *Service) SignupSubmit(c context.Context, req *model.SignupSubmitReq) (r
 	}
 	err := s.db.User.WithContext(c).Create(user)
 	if err != nil {
-		log.Logger.Errorf(c, "SignupSubmit req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, err)
+		log.Logger.Errorf(c, "SignupSubmit req(%v) openID(%s) err(%v)", req, req.OpenID, err)
 		resp = &model.SignupSubmitResp{
 			CommonResp: &model.CommonResp{
 				Code: 101,
@@ -48,14 +43,8 @@ func (s *Service) SignupSubmit(c context.Context, req *model.SignupSubmitReq) (r
 	return
 }
 
-func (s *Service) SignupGet(c *gin.Context) (resp *model.SignupGetResp) {
+func (s *Service) SignupGet(c *gin.Context, openID string) (resp *model.SignupGetResp) {
 
-	//tokenClaims := c.Value("user").(*model.TokenClaims)
-	// todo:待删除
-	tokenClaims := new(model.TokenClaims)
-	tokenClaims.OpenID = "123"
-
-	openID := tokenClaims.OpenID
 	u := s.db.User
 	user, err := s.db.User.WithContext(c).Where(u.OpenID.Eq(openID)).First()
 	if err != nil {
@@ -89,13 +78,8 @@ func (s *Service) SignupGet(c *gin.Context) (resp *model.SignupGetResp) {
 
 func (s *Service) SignupUpdate(c *gin.Context, req *model.SignupUpdateReq) (resp *model.SignupUpdateResp) {
 	resp = new(model.SignupUpdateResp)
-	//tokenClaims := c.Value("user").(*model.TokenClaims)
-	// todo:待删除
-	tokenClaims := new(model.TokenClaims)
-	tokenClaims.OpenID = "123"
-	openID := tokenClaims.OpenID
 	user := &model.User{
-		OpenID:       tokenClaims.OpenID,
+		OpenID:       req.OpenID,
 		Name:         req.Name,
 		StudentID:    req.StudentID,
 		Gender:       req.Gender,
@@ -108,9 +92,9 @@ func (s *Service) SignupUpdate(c *gin.Context, req *model.SignupUpdateReq) (resp
 		Reason:       req.Reason,
 	}
 	u := s.db.User
-	_, err := s.db.User.WithContext(c).Where(u.OpenID.Eq(openID)).Updates(user)
+	_, err := s.db.User.WithContext(c).Where(u.OpenID.Eq(req.OpenID)).Updates(user)
 	if err != nil {
-		log.Logger.Errorf(c, "SignupSubmit req(%v) openID(%s) err(%v)", req, tokenClaims.OpenID, err)
+		log.Logger.Errorf(c, "SignupSubmit req(%v) openID(%s) err(%v)", req, req.OpenID, err)
 		resp.CommonResp = &model.CommonResp{
 			Code: 101,
 			Msg:  "数据库查询错误",

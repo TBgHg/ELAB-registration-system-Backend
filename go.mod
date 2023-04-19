@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/coreos/go-oidc/v3 v3.5.0
 	github.com/gin-gonic/gin v1.9.0
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
 	github.com/redis/go-redis/v9 v9.0.3
 	golang.org/x/oauth2 v0.3.0
