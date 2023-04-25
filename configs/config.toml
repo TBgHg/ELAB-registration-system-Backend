@@ -6,9 +6,12 @@ issuer = "https://auth.zeithrold.com"
 [db]
 addr = "127.0.0.1:3306"
 user = "root"
-pwd = ""
+pwd = "helloworld"
 database = "Registration"
 dsn = "%s:%s@tcp(%s)/%s?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&loc=Local&charset=utf8mb4,utf8"
+
+[mobile]
+endpoint = "exp://127.0.0.1:19000/callback"
 
 [redis]
 addr = "127.0.0.1:6379"
@@ -19,14 +22,11 @@ DB = 0
 endpoint = "http://oss-cn-shanghai.aliyuncs.com"
 access_key_id = ""
 access_key_secret = ""
-ossPreURL = "https://byte-dance-01.oss-accelerate.aliyuncs.com/video/"
+oss_pre_url = "https://byte-dance-01.oss-accelerate.aliyuncs.com/video/"
 
 
 [oidc]
 issuer = "https://auth.zeithrold.com"
-client_id = "ac7e6090893a6233072a"
-client_secret = "42bd508cb365bc1f3a046f10610ef48768be6236"
-redirect_url = "http://localhost:8080/auth/callback"
-
-[mobile]
-endpoint = "https://auth.zeithrold.com"
+client_id = ""
+client_secret = ""
+redirect_url = "http://127.0.0.1:8080/auth/callback"

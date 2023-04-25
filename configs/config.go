@@ -2,43 +2,45 @@ package configs
 
 import (
 	log "ELAB-registration-system-Backend/logger"
-	"os"
+	"fmt"
+	"reflect"
+	"strings"
 
-	"github.com/BurntSushi/toml"
+	"github.com/spf13/viper"
 )
 
 type oauthConfig struct {
-	Issuer string `toml:"issuer"`
+	Issuer string `mapstructure:"issuer"`
 }
 
 type httpConfig struct {
-	Addr  string       `toml:"addr"`
-	OAuth *oauthConfig `toml:"oauth"`
+	Addr  string       `mapstructure:"addr"`
+	OAuth *oauthConfig `mapstructure:"oauth"`
 }
 
 type mobileConfig struct {
-	Endpoint string `toml:"endpoint"`
+	Endpoint string `mapstructure:"endpoint"`
 }
 
 type dbConfig struct {
-	Addr     string `toml:"addr"`
-	User     string `toml:"user"`
-	Pwd      string `toml:"pwd"`
-	Database string `toml:"database"`
-	DSN      string `toml:"dsn"`
+	Addr     string `mapstructure:"addr"`
+	User     string `mapstructure:"user"`
+	Pwd      string `mapstructure:"pwd"`
+	Database string `mapstructure:"database"`
+	DSN      string `mapstructure:"dsn"`
 }
 
 type redisConfig struct {
-	Addr string `toml:"addr"`
-	Pwd  string `toml:"pwd"`
-	DB   int    `toml:"db"`
+	Addr string `mapstructure:"addr"`
+	Pwd  string `mapstructure:"pwd"`
+	DB   int    `mapstructure:"db"`
 }
 
 type oidcConfig struct {
-	Issuer       string `toml:"issuer"`
-	ClientId     string `toml:"client_id"`
-	ClientSecret string `toml:"client_secret"`
-	RedirectUrl  string `toml:"redirect_url"`
+	Issuer       string `mapstructure:"issuer"`
+	ClientId     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
+	RedirectUrl  string `mapstructure:"redirect_url"`
 }
 
 type ossConfig struct {
@@ -50,38 +52,64 @@ type ossConfig struct {
 
 type Config struct {
 	// 服务端口
-	Http      *httpConfig   `toml:"http"`
-	DB        *dbConfig     `toml:"db"`
-	Redis     *redisConfig  `toml:"redis"`
-	Oidc      *oidcConfig   `toml:"oidc"`
-	Mobile    *mobileConfig `toml:"mobile"`
-	OssConfig *ossConfig    `toml:"oss"`
+	Http      httpConfig   `mapstructure:"http"`
+	DB        dbConfig     `mapstructure:"db"`
+	Redis     redisConfig  `mapstructure:"redis"`
+	Oidc      oidcConfig   `mapstructure:"oidc"`
+	Mobile    mobileConfig `mapstructure:"mobile"`
+	Cool      string       `mapstructure:"cool"`
+  OssConfig ossConfig    `mapstructure:"oss"`
 }
 
-var (
-	conf Config
-	err  error
-)
+var conf Config
+
+// https://github.com/spf13/viper/issues/188
+// viper对于嵌套的结构体，无法自动绑定环境变量
+func BindEnvs(iface interface{}, parts ...string) {
+	ifv := reflect.ValueOf(iface)
+	ift := reflect.TypeOf(iface)
+	for i := 0; i < ift.NumField(); i++ {
+		v := ifv.Field(i)
+		t := ift.Field(i)
+		tv, ok := t.Tag.Lookup("mapstructure")
+		if !ok {
+			continue
+		}
+		switch v.Kind() {
+		case reflect.Struct:
+			BindEnvs(v.Interface(), append(parts, tv)...)
+		default:
+			viper.BindEnv(strings.Join(append(parts, tv), "."))
+		}
+	}
+}
 
 func Init() {
-	loadConfig()
+	viper.SetConfigFile("configs/config.toml")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvPrefix("ELAB")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Logger.Error("failed to read config file: ")
+		log.Logger.Error(err.Error())
+		return
+	}
+	BindEnvs(conf)
+	// 试着输出conf的一些东西
+	if err := loadConfig(); err != nil {
+		log.Logger.Error("failed to load config: ")
+		log.Logger.Error(err.Error())
+		return
+	}
 }
 
 func GetConfig() (*Config, error) {
-	return &conf, err
+	return &conf, nil
 }
 
-func loadConfig() {
-	var data []byte
-	// 读取配置文件
-	data, err = os.ReadFile("./configs/config.toml")
-	if err != nil {
-		log.Logger.Error("loadConfig os.ReadFile failed err:" + err.Error())
-		return
+func loadConfig() error {
+	if err := viper.Unmarshal(&conf); err != nil {
+		return fmt.Errorf("failed to unmarshal config: %w", err)
 	}
-	err = toml.Unmarshal(data, &conf)
-	if err != nil {
-		log.Logger.Error("loadConfig toml.Unmarshal failed err:" + err.Error())
-		return
-	}
+	return nil
 }
