@@ -7,23 +7,25 @@
 
 存储用户基本信息
 
-| 字段名          | 类型           | 是否为空 | 注释           |
-|--------------|--------------|------|--------------|
-| id           | int(11)      | 否    | 主键           |
-| open_id      | varchar(20)  | 否    | OAuth2标识     |
-| name         | varchar(20)  | 否    | 姓名           |
-| student_id   | varchar(20)  | 否    | 学号           |
-| gender       | tinyint(2)   | 否    | 性别：0表示女，1表示男 |
-| class        | varchar(50)  | 否    | 班级           |
-| position     | varchar(50)  | 是    | 学生职务         |
-| mobile       | varchar(20)  | 否    | 电话号码         |
-| mail         | varchar(20)  | 否    | 邮箱           |
-| group        | varchar(20)  | 否    | 报名组别         |
-| introduction | varchar(500) | 是    | 个人简介         |
-| awards       | varchar(500) | 是    | 所获奖项         |
-| reason       | varchar(500) | 是    | 加入原因         |
-| created_at   | datetime     | 否    | 创建时间         |
-| updated_at   | datetime     | 否    | 最后修改时间       |
+| 字段名          | 类型           | 是否为空 | 注释                  |
+|--------------|--------------|------|---------------------|
+| id           | int(11)      | 否    | 主键                  |
+| open_id      | varchar(20)  | 否    | OAuth2标识            |
+| name         | varchar(20)  | 否    | 姓名                  |
+| student_id   | varchar(20)  | 否    | 学号                  |
+| avatar       | varchar(100) | 是    | 头像地址                |
+| is_elab_er   | tinyint(2)   | 否    | 是不是科中的同学：0表示不是，1表示是 |
+| gender       | tinyint(2)   | 否    | 性别：0表示女，1表示男        |
+| class        | varchar(50)  | 否    | 班级                  |
+| position     | varchar(50)  | 是    | 学生职务                |
+| mobile       | varchar(20)  | 否    | 电话号码                |
+| mail         | varchar(20)  | 否    | 邮箱                  |
+| group        | varchar(20)  | 否    | 报名组别                |
+| introduction | varchar(500) | 是    | 个人简介                |
+| awards       | varchar(500) | 是    | 所获奖项                |
+| reason       | varchar(500) | 是    | 加入原因                |
+| created_at   | datetime     | 否    | 创建时间                |
+| updated_at   | datetime     | 否    | 最后修改时间              |
 
 ## Application表
 
@@ -62,13 +64,15 @@
 create database Registration;
 
 use Registration;
-
+drop table if exists User;
 -- User表，存储用户基本信息
 CREATE TABLE `User` (
                         `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
                         `open_id` varchar(20) NOT NULL COMMENT 'OAuth2标识',
                         `name` varchar(20) NOT NULL COMMENT '姓名',
                         `student_id` varchar(20) NOT NULL COMMENT '学号',
+                        `avatar` varchar(100) DEFAULT NULL COMMENT '头像地址',
+                        `isELABer` tinyint(2) NOT NULL COMMENT '是不是科中的同学：0表示不是，1表示是',
                         `gender` tinyint(2) NOT NULL COMMENT '性别：0表示女，1表示男',
                         `class` varchar(50) NOT NULL COMMENT '班级',
                         `position` varchar(50) DEFAULT NULL COMMENT '学生职务',

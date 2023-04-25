@@ -31,6 +31,8 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.OpenID = field.NewString(tableName, "open_id")
 	_user.Name = field.NewString(tableName, "name")
 	_user.StudentID = field.NewString(tableName, "student_id")
+	_user.Avatar = field.NewString(tableName, "avatar")
+	_user.IsELABer = field.NewInt32(tableName, "isELABer")
 	_user.Gender = field.NewInt32(tableName, "gender")
 	_user.Class = field.NewString(tableName, "class")
 	_user.Position = field.NewString(tableName, "position")
@@ -56,6 +58,8 @@ type user struct {
 	OpenID       field.String // OAuth2标识
 	Name         field.String // 姓名
 	StudentID    field.String // 学号
+	Avatar       field.String // 头像地址
+	IsELABer     field.Int32  // 是不是科中的同学：0表示不是，1表示是
 	Gender       field.Int32  // 性别：0表示女，1表示男
 	Class        field.String // 班级
 	Position     field.String // 学生职务
@@ -87,6 +91,8 @@ func (u *user) updateTableName(table string) *user {
 	u.OpenID = field.NewString(table, "open_id")
 	u.Name = field.NewString(table, "name")
 	u.StudentID = field.NewString(table, "student_id")
+	u.Avatar = field.NewString(table, "avatar")
+	u.IsELABer = field.NewInt32(table, "isELABer")
 	u.Gender = field.NewInt32(table, "gender")
 	u.Class = field.NewString(table, "class")
 	u.Position = field.NewString(table, "position")
@@ -120,11 +126,13 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 15)
+	u.fieldMap = make(map[string]field.Expr, 17)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["open_id"] = u.OpenID
 	u.fieldMap["name"] = u.Name
 	u.fieldMap["student_id"] = u.StudentID
+	u.fieldMap["avatar"] = u.Avatar
+	u.fieldMap["isELABer"] = u.IsELABer
 	u.fieldMap["gender"] = u.Gender
 	u.fieldMap["class"] = u.Class
 	u.fieldMap["position"] = u.Position

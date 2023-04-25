@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/BurntSushi/toml v1.2.1
+	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
@@ -14,7 +15,10 @@ require (
 	gorm.io/plugin/dbresolver v1.4.1
 )
 
-require github.com/go-jose/go-jose/v3 v3.0.0 // indirect
+require (
+	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
+)
 
 require (
 	github.com/bytedance/sonic v1.8.0 // indirect

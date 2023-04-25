@@ -41,13 +41,21 @@ type oidcConfig struct {
 	RedirectUrl  string `toml:"redirect_url"`
 }
 
+type ossConfig struct {
+	Endpoint        string `toml:"endpoint"`
+	AccessKeyID     string `toml:"access_key_id"`
+	AccessKeySecret string `toml:"access_key_secret"`
+	OssPreURL       string `toml:"oss_pre_url"`
+}
+
 type Config struct {
 	// 服务端口
-	Http   *httpConfig   `toml:"http"`
-	DB     *dbConfig     `toml:"db"`
-	Redis  *redisConfig  `toml:"redis"`
-	Oidc   *oidcConfig   `toml:"oidc"`
-	Mobile *mobileConfig `toml:"mobile"`
+	Http      *httpConfig   `toml:"http"`
+	DB        *dbConfig     `toml:"db"`
+	Redis     *redisConfig  `toml:"redis"`
+	Oidc      *oidcConfig   `toml:"oidc"`
+	Mobile    *mobileConfig `toml:"mobile"`
+	OssConfig *ossConfig    `toml:"oss"`
 }
 
 var (

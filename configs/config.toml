@@ -10,8 +10,23 @@ pwd = ""
 database = "Registration"
 dsn = "%s:%s@tcp(%s)/%s?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&loc=Local&charset=utf8mb4,utf8"
 
-
 [redis]
 addr = "127.0.0.1:6379"
 pwd = ""
 DB = 0
+
+[oss]
+endpoint = "http://oss-cn-shanghai.aliyuncs.com"
+access_key_id = "LTAI5tPgZiMVJY6bNxQFs9MW"
+access_key_secret = "pd1aiM8jh6gNdZCxRscesOJ1Hif3aE"
+ossPreURL = "https://byte-dance-01.oss-accelerate.aliyuncs.com/video/"
+
+
+[oidc]
+issuer = "https://auth.zeithrold.com"
+client_id = "ac7e6090893a6233072a"
+client_secret = "42bd508cb365bc1f3a046f10610ef48768be6236"
+redirect_url = "http://localhost:8080/auth/callback"
+
+[mobile]
+endpoint = "https://auth.zeithrold.com"
