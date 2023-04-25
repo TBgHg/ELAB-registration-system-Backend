@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/oauth2"
@@ -20,6 +21,7 @@ type Service struct {
 	Rdb          *redis.Client
 	Provider     *oidc.Provider
 	OAuth2Config *oauth2.Config
+	OssBucket    *oss.Bucket
 }
 
 func NewService(conf *configs.Config) (*Service, error) {
@@ -49,9 +51,14 @@ func NewService(conf *configs.Config) (*Service, error) {
 		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
 	}
 
-	//err = OAuth2Init(conf.Http.OAuth.Issuer)
 	if err != nil {
 		log.Logger.Error("NewService OAuth2Init failed err:" + err.Error())
+		return nil, err
+	}
+
+	bucket, err := ossInit(conf.OssConfig.Endpoint, conf.OssConfig.AccessKeyID, conf.OssConfig.AccessKeySecret)
+	if err != nil {
+		log.Logger.Error("NewService ossInit failed err:" + err.Error())
 		return nil, err
 	}
 
@@ -61,5 +68,26 @@ func NewService(conf *configs.Config) (*Service, error) {
 		Rdb:          rdb,
 		Provider:     provider,
 		OAuth2Config: &oauth2Config,
+		OssBucket:    bucket,
 	}, nil
+}
+
+// ossInit 初始化，将ConnQuery与数据库绑定
+func ossInit(endpoint, accessKeyID, accessKeySecret string) (bucket *oss.Bucket, err error) {
+	// 连接OSS账户
+	client, err := oss.New(endpoint, accessKeyID, accessKeySecret)
+	if err != nil {
+		log.Logger.Error("连接OSS账户失败" + err.Error())
+		return nil, err
+	} else { // OSS账户连接成功
+		// 连接存储空间
+		bucket, err = client.Bucket("byte-dance-01")
+		if err != nil {
+			log.Logger.Error("连接存储空间失败" + err.Error())
+			return nil, err
+		} else { // 存储空间连接成功
+			log.Logger.Info("OSS初始化完成")
+		}
+	}
+	return bucket, nil
 }

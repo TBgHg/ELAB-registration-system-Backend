@@ -22,7 +22,7 @@ func interviewSelect(c *gin.Context) {
 
 	value, exists := c.Get("openID")
 	if !exists {
-		log.Logger.Errorf(c, "signupSubmit c.Get openID err")
+		log.Logger.Errorf(c, "userSubmit c.Get openID err")
 		return
 	} else {
 		req.OpenID = value.(string)
@@ -34,7 +34,7 @@ func interviewSelect(c *gin.Context) {
 func interviewGet(c *gin.Context) {
 	value, exists := c.Get("openID")
 	if !exists {
-		log.Logger.Errorf(c, "signupSubmit c.Get openID err")
+		log.Logger.Errorf(c, "userSubmit c.Get openID err")
 		return
 	}
 	c.JSON(http.StatusOK, svc.InterviewGet(c, value.(string)))

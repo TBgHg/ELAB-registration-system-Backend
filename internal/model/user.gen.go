@@ -16,6 +16,8 @@ type User struct {
 	OpenID       string    `gorm:"column:open_id;not null" json:"open_id"`                                 // OAuth2标识
 	Name         string    `gorm:"column:name;not null" json:"name"`                                       // 姓名
 	StudentID    string    `gorm:"column:student_id;not null" json:"student_id"`                           // 学号
+	Avatar       string    `gorm:"column:avatar" json:"avatar"`                                            // 头像地址
+	IsELABer     int32     `gorm:"column:isELABer;not null" json:"isELABer"`                               // 是不是科中的同学：0表示不是，1表示是
 	Gender       int32     `gorm:"column:gender;not null" json:"gender"`                                   // 性别：0表示女，1表示男
 	Class        string    `gorm:"column:class;not null" json:"class"`                                     // 班级
 	Position     string    `gorm:"column:position" json:"position"`                                        // 学生职务

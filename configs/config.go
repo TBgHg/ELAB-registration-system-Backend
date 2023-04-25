@@ -43,14 +43,22 @@ type oidcConfig struct {
 	RedirectUrl  string `mapstructure:"redirect_url"`
 }
 
+type ossConfig struct {
+	Endpoint        string `toml:"endpoint"`
+	AccessKeyID     string `toml:"access_key_id"`
+	AccessKeySecret string `toml:"access_key_secret"`
+	OssPreURL       string `toml:"oss_pre_url"`
+}
+
 type Config struct {
 	// 服务端口
-	Http   httpConfig   `mapstructure:"http"`
-	DB     dbConfig     `mapstructure:"db"`
-	Redis  redisConfig  `mapstructure:"redis"`
-	Oidc   oidcConfig   `mapstructure:"oidc"`
-	Mobile mobileConfig `mapstructure:"mobile"`
-	Cool   string       `mapstructure:"cool"`
+	Http      httpConfig   `mapstructure:"http"`
+	DB        dbConfig     `mapstructure:"db"`
+	Redis     redisConfig  `mapstructure:"redis"`
+	Oidc      oidcConfig   `mapstructure:"oidc"`
+	Mobile    mobileConfig `mapstructure:"mobile"`
+	Cool      string       `mapstructure:"cool"`
+  OssConfig ossConfig    `mapstructure:"oss"`
 }
 
 var conf Config
