@@ -17,8 +17,8 @@ DB = 0
 
 [oss]
 endpoint = "http://oss-cn-shanghai.aliyuncs.com"
-access_key_id = "LTAI5tPgZiMVJY6bNxQFs9MW"
-access_key_secret = "pd1aiM8jh6gNdZCxRscesOJ1Hif3aE"
+access_key_id = ""
+access_key_secret = ""
 ossPreURL = "https://byte-dance-01.oss-accelerate.aliyuncs.com/video/"
 
 
