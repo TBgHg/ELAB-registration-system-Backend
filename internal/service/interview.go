@@ -1,10 +1,10 @@
 package service
 
 import (
-	"ELAB-registration-system-Backend/internal/dao"
-	"ELAB-registration-system-Backend/internal/model"
-	log "ELAB-registration-system-Backend/logger"
 	"context"
+	"elab-backend/internal/dao"
+	"elab-backend/internal/model"
+	log "elab-backend/logger"
 	"errors"
 	"gorm.io/gorm"
 )

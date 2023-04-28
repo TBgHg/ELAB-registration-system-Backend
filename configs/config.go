@@ -1,73 +1,88 @@
 package configs
 
 import (
-	log "ELAB-registration-system-Backend/logger"
 	"fmt"
+	"github.com/spf13/viper"
 	"reflect"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
-type oauthConfig struct {
-	Issuer string `mapstructure:"issuer"`
+// HttpConfig 有关HTTP服务器的配置。
+type HttpConfig struct {
+	// Gin绑定的地址。
+	BindAddress string `mapstructure:"bind_address"`
 }
 
-type httpConfig struct {
-	Addr  string       `mapstructure:"addr"`
-	OAuth *oauthConfig `mapstructure:"oauth"`
-}
-
-type mobileConfig struct {
-	Endpoint string `mapstructure:"endpoint"`
-}
-
-type dbConfig struct {
-	Addr     string `mapstructure:"addr"`
-	User     string `mapstructure:"user"`
-	Pwd      string `mapstructure:"pwd"`
+// MySQLConfig MySQL配置。
+type MySQLConfig struct {
+	// MySQL数据库地址。
+	Address string `mapstructure:"address"`
+	// MySQL数据库用户名。
+	Username string `mapstructure:"username"`
+	// MySQL数据库密码。
+	Password string `mapstructure:"password"`
+	// MySQL数据库名。
 	Database string `mapstructure:"database"`
-	DSN      string `mapstructure:"dsn"`
+	// MySQL的DSN。
+	DSN string `mapstructure:"dsn"`
 }
 
-type redisConfig struct {
-	Addr string `mapstructure:"addr"`
-	Pwd  string `mapstructure:"pwd"`
-	DB   int    `mapstructure:"db"`
+// RedisConfig Redis配置。
+type RedisConfig struct {
+	// Redis地址。
+	Address string `mapstructure:"address"`
+	// Redis密码。
+	Password string `mapstructure:"password"`
+	// Redis数据库。
+	Database int `mapstructure:"database"`
 }
 
-type oidcConfig struct {
-	Issuer       string `mapstructure:"issuer"`
-	ClientId     string `mapstructure:"client_id"`
+// AliyunOSSConfig 阿里云OSS配置。
+type AliyunOSSConfig struct {
+	// 阿里云OSS的Endpoint。
+	Endpoint string `mapstructure:"endpoint"`
+	// 阿里云OSS的AccessKeyID。
+	AccessKeyID string `mapstructure:"access_key_id"`
+	// 阿里云OSS的AccessKeySecret。
+	AccessKeySecret string `mapstructure:"access_key_secret"`
+}
+
+// OidcConfig OIDC配置。
+type OidcConfig struct {
+	// Oidc的Issuer。
+	Issuer string `mapstructure:"issuer"`
+	// Oidc的ClientID。
+	ClientID string `mapstructure:"client_id"`
+	// Oidc的ClientSecret。
 	ClientSecret string `mapstructure:"client_secret"`
-	RedirectUrl  string `mapstructure:"redirect_url"`
+	// Oidc的RedirectURL。
+	RedirectURL string `mapstructure:"redirect_url"`
 }
 
-type ossConfig struct {
-	Endpoint        string `toml:"endpoint"`
-	AccessKeyID     string `toml:"access_key_id"`
-	AccessKeySecret string `toml:"access_key_secret"`
-	OssPreURL       string `toml:"oss_pre_url"`
-}
-
+// Config 应用的整体配置。
 type Config struct {
-	// 服务端口
-	Http      httpConfig   `mapstructure:"http"`
-	DB        dbConfig     `mapstructure:"db"`
-	Redis     redisConfig  `mapstructure:"redis"`
-	Oidc      oidcConfig   `mapstructure:"oidc"`
-	Mobile    mobileConfig `mapstructure:"mobile"`
-	Cool      string       `mapstructure:"cool"`
-  OssConfig ossConfig    `mapstructure:"oss"`
+	// HTTP服务器的配置。
+	Http HttpConfig `mapstructure:"http"`
+	// MySQL的配置。
+	MySQL MySQLConfig `mapstructure:"mysql"`
+	// Redis的配置。
+	Redis RedisConfig `mapstructure:"redis"`
+	// 阿里云OSS的配置。
+	AliyunOSS AliyunOSSConfig `mapstructure:"aliyun_oss"`
+	// OIDC的配置。
+	Oidc OidcConfig `mapstructure:"oidc"`
 }
 
 var conf Config
 
+// BindEnvs 结构体绑定环境变量
+//
 // https://github.com/spf13/viper/issues/188
-// viper对于嵌套的结构体，无法自动绑定环境变量
-func BindEnvs(iface interface{}, parts ...string) {
-	ifv := reflect.ValueOf(iface)
-	ift := reflect.TypeOf(iface)
+//
+// viper对于嵌套的结构体，无法自动绑定环境变量。本函数通过Reflect实现了对嵌套结构体的绑定。
+func BindEnvs(target interface{}, parts ...string) error {
+	ifv := reflect.ValueOf(target)
+	ift := reflect.TypeOf(target)
 	for i := 0; i < ift.NumField(); i++ {
 		v := ifv.Field(i)
 		t := ift.Field(i)
@@ -77,39 +92,53 @@ func BindEnvs(iface interface{}, parts ...string) {
 		}
 		switch v.Kind() {
 		case reflect.Struct:
-			BindEnvs(v.Interface(), append(parts, tv)...)
+			err := BindEnvs(v.Interface(), append(parts, tv)...)
+			if err != nil {
+				return fmt.Errorf("failed to bind env: %w", err)
+			}
 		default:
-			viper.BindEnv(strings.Join(append(parts, tv), "."))
+			err := viper.BindEnv(strings.Join(append(parts, tv), "."))
+			if err != nil {
+				return fmt.Errorf("failed to bind env: %w", err)
+			}
 		}
 	}
+	return nil
 }
 
-func Init() {
-	viper.SetConfigFile("configs/config.toml")
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.SetEnvPrefix("ELAB")
-	if err := viper.ReadInConfig(); err != nil {
-		log.Logger.Error("failed to read config file: ")
-		log.Logger.Error(err.Error())
-		return
-	}
-	BindEnvs(conf)
-	// 试着输出conf的一些东西
-	if err := loadConfig(); err != nil {
-		log.Logger.Error("failed to load config: ")
-		log.Logger.Error(err.Error())
-		return
-	}
-}
-
-func GetConfig() (*Config, error) {
-	return &conf, nil
-}
-
+// loadConfig 从viper中读取配置。
 func loadConfig() error {
 	if err := viper.Unmarshal(&conf); err != nil {
 		return fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 	return nil
+}
+
+// Init 初始化配置。
+//
+// 本应用主要从两个渠道读取配置。
+//   - 配置文件（configs/config.toml）
+//   - 环境变量，环境变量命名规则遵循Viper。
+func Init(configFilePath string) error {
+	// 读取配置文件
+	viper.SetConfigFile(configFilePath)
+	// 读取环境变量
+	viper.AutomaticEnv()
+	// 对环境变量的处理。
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvPrefix("ELAB")
+	if err := viper.ReadInConfig(); err != nil {
+		return fmt.Errorf("failed to read config file: %w", err)
+	}
+	if err := BindEnvs(&conf); err != nil {
+		return fmt.Errorf("failed to bind envs: %w", err)
+	}
+	if err := loadConfig(); err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+	return nil
+}
+
+func GetConfig() *Config {
+	return &conf
 }

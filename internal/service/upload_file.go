@@ -1,8 +1,8 @@
 package service
 
 import (
-	log "ELAB-registration-system-Backend/logger"
 	"bytes"
+	log "elab-backend/logger"
 )
 
 func (s *Service) UploadFile(file []byte, filename string, fileType string) bool {

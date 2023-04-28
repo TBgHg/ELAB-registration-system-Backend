@@ -1,8 +1,8 @@
 package http
 
 import (
-	"ELAB-registration-system-Backend/internal/model"
-	log "ELAB-registration-system-Backend/logger"
+	"elab-backend/internal/model"
+	log "elab-backend/logger"
 	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"

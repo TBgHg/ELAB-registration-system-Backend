@@ -1,8 +1,8 @@
 package service
 
 import (
-	log "ELAB-registration-system-Backend/logger"
 	"context"
+	log "elab-backend/logger"
 	"github.com/google/uuid"
 	"strconv"
 	"time"
