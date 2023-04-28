@@ -1,7 +1,7 @@
 package http
 
 import (
-	log "ELAB-registration-system-Backend/logger"
+	log "elab-backend/logger"
 	"fmt"
 	"net/url"
 	"time"

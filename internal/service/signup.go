@@ -1,9 +1,9 @@
 package service
 
 import (
-	"ELAB-registration-system-Backend/internal/model"
-	log "ELAB-registration-system-Backend/logger"
 	"context"
+	"elab-backend/internal/model"
+	log "elab-backend/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

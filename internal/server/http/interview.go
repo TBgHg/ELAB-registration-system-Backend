@@ -1,16 +1,17 @@
 package http
 
 import (
-	"ELAB-registration-system-Backend/internal/model"
-	log "ELAB-registration-system-Backend/logger"
+	"elab-backend/internal/model"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/exp/slog"
+	"log"
 	"net/http"
 )
 
 func interviewSelect(c *gin.Context) {
 	req := new(model.InterviewSelectReq)
 	if err := c.BindJSON(req); err != nil {
-		log.Logger.Errorf(c, "interviewSelect c.BindJSON err(%v)", err)
+		slog.Error("interviewSelect c.BindJSON err(%w)", err)
 		c.JSON(http.StatusOK, model.CommonResp{Code: 400, Msg: "参数错误,BindJSON失败"})
 		return
 	}

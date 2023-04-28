@@ -1,7 +1,7 @@
 package http
 
 import (
-	"ELAB-registration-system-Backend/internal/service"
+	"elab-backend/internal/service"
 
 	"github.com/gin-gonic/gin"
 )

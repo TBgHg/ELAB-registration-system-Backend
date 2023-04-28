@@ -1,7 +1,7 @@
 package http
 
 import (
-	"ELAB-registration-system-Backend/internal/model"
+	"elab-backend/internal/model"
 	"fmt"
 	"net/http"
 

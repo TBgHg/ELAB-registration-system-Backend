@@ -15,3 +15,7 @@
 3. 写一下后端接口文档
 4. 码代码
 5. Docker compose部署
+
+## Restructure 分支：重构计划
+
+- RESTful的API进行重构
