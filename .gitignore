@@ -171,3 +171,6 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/go,macos,goland
+/.idea/elab-backend.iml
+/.idea/modules.xml
+/.idea/vcs.xml
