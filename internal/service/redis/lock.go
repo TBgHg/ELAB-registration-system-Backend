@@ -6,7 +6,7 @@ import (
 )
 
 const Timeout = time.Second * 10
-const RetryTimes = 100
+const RetryTimes = 50
 const RetryInterval = time.Millisecond * 100
 
 type GetLockTimeoutError struct{}
