@@ -10,3 +10,24 @@ type ErrorResponse struct {
 	// Message 错误信息
 	Message string `json:"message"`
 }
+
+func NewInvalidParamError() ErrorResponse {
+	return ErrorResponse{
+		Error:   "invalid_param",
+		Message: "参数不合法",
+	}
+}
+
+func NewInternalServerError() ErrorResponse {
+	return ErrorResponse{
+		Error:   "internal_server_error",
+		Message: "服务器内部错误",
+	}
+}
+
+func NewUpdateBodyOpenIdMismatchError() ErrorResponse {
+	return ErrorResponse{
+		Error:   "openid_mismatch",
+		Message: "无法修改其他用户的信息",
+	}
+}

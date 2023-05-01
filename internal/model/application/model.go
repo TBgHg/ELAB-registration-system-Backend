@@ -1,10 +1,15 @@
 package application
 
+import "gorm.io/gorm"
+
+const InterviewRoomUriScheme = "interview-room://"
+
 // LongTextForm 长文本表单
 //
 // 在Gin当中，会被用作Request
 type LongTextForm struct {
-	OpenId string `json:"openid" validate:"uuid" binding:"required"`
+	gorm.Model
+	OpenId string `json:"openid" validate:"uuid" binding:"required" gorm:"column:openid"`
 	// 加入原因
 	Reason string `json:"reason"`
 	// 个人经历
@@ -17,6 +22,7 @@ type LongTextForm struct {
 //
 // 在Gin当中并不会被用作Request，而是作为Response.
 type InterviewRoom struct {
+	gorm.Model
 	// Id 房间Id
 	Id string `json:"id"`
 	// Name 房间名称
@@ -29,4 +35,29 @@ type InterviewRoom struct {
 	CurrentOccupancy int32 `json:"current_occupancy"`
 	// Location 房间地点
 	Location string `json:"location"`
+}
+
+type InterviewRoomSelection struct {
+	gorm.Model
+	// OpenId 用户OpenId
+	OpenId string `json:"openid" validate:"uuid" binding:"required" gorm:"column:openid"`
+	// RoomId 房间Id
+	RoomId string `json:"room_id" validate:"uuid" binding:"required" gorm:"column:room_id"`
+}
+
+type GetInterviewRoomResponse struct {
+	Rooms []InterviewRoom `json:"rooms"`
+}
+
+type InterviewRoomOperateResponse struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateLongTextFormResponse struct {
+	Ok bool `json:"ok"`
+}
+
+type StatusResponse struct {
+	LongTextForm  bool `json:"long_text_form"`
+	RoomSelection bool `json:"room_selection"`
 }

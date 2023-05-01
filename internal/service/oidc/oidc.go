@@ -21,7 +21,7 @@ type Service struct {
 	Provider *oidc.Provider
 	// RemoteKeySet 远程密钥集，用于对 JWT 进行验证
 	RemoteKeySet *oidc.RemoteKeySet
-	// IdTokenVerifier IdToken验证器
+	// Verifier IdToken验证器，不过也能用于验证AccessToken
 	Verifier *oidc.IDTokenVerifier
 	// OAuthConfig OAuth 配置
 	OAuthConfig *oauth2.Config
@@ -37,6 +37,12 @@ type UserInfoClaims struct {
 	PreferredUsername string `json:"preferred_username"`
 	// Picture 用户的头像
 	Picture string `json:"picture"`
+}
+
+func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*oauth2.Token, error) {
+	return s.OAuthConfig.TokenSource(ctx, &oauth2.Token{
+		RefreshToken: refreshToken,
+	}).Token()
 }
 
 // NewService 新服务
@@ -64,6 +70,8 @@ func NewService(config *Config) (*Service, error) {
 	}
 	// RemoteKeySet 是一个远程密钥集，用于对 JWT 进行验证
 	remoteKeySet := oidc.NewRemoteKeySet(ctx, providerClaims.JwksUri)
+	// Verifier按道理讲应该是IDToken的验证工具
+	// 不过神奇的发现，AccessToken和IDToken的结构体是一样的！
 	verifier := provider.Verifier(&oidc.Config{ClientID: config.OAuthConfig.ClientID})
 	service := &Service{
 		Provider:     provider,
