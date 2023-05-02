@@ -9,7 +9,7 @@ const InterviewRoomUriScheme = "interview-room://"
 // 在Gin当中，会被用作Request
 type LongTextForm struct {
 	gorm.Model
-	OpenId string `json:"openid" validate:"uuid" binding:"required" gorm:"column:openid"`
+	OpenId string `json:"openid" binding:"required,uuid" gorm:"column:openid"`
 	// 加入原因
 	Reason string `json:"reason"`
 	// 个人经历
@@ -40,9 +40,9 @@ type InterviewRoom struct {
 type InterviewRoomSelection struct {
 	gorm.Model
 	// OpenId 用户OpenId
-	OpenId string `json:"openid" validate:"uuid" binding:"required" gorm:"column:openid"`
+	OpenId string `json:"openid" binding:"required,uuid" gorm:"column:openid"`
 	// RoomId 房间Id
-	RoomId string `json:"room_id" validate:"uuid" binding:"required" gorm:"column:room_id"`
+	RoomId string `json:"room_id" binding:"required,uuid" gorm:"column:room_id"`
 }
 
 type GetInterviewRoomResponse struct {

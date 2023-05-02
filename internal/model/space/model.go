@@ -7,8 +7,9 @@ import "gorm.io/gorm"
 // 空间是OneELAB组织人员的最小单位。
 type Space struct {
 	gorm.Model
+	primaryKey int64 `gorm:"primaryKey"`
 	// Id 空间的唯一标识符
-	Id string `json:"id" validate:"uuid"`
+	Id string `json:"id" binding:"uuid"`
 	// Name 空间的名称
 	Name string `json:"name"`
 	// Description 空间的描述
@@ -21,9 +22,9 @@ type Space struct {
 type Member struct {
 	gorm.Model
 	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" validate:"uuid"`
+	SpaceId string `json:"space_id" binding:"uuid"`
 	// OpenId 用户的OpenId
-	OpenId string `json:"openid" validate:"uuid" gorm:"column:openid"`
+	OpenId string `json:"openid" binding:"uuid" gorm:"column:openid"`
 	// Position 用户在空间中的职位
 	//
 	// 可能的值有：
@@ -32,7 +33,20 @@ type Member struct {
 	//  - member
 	Position string `json:"position"`
 	// Meta 用户在空间中的元数据
-	Meta string `json:"meta" validate:"json"`
+	Meta string `json:"meta" binding:"json"`
+}
+
+type MemberPosition string
+
+const (
+	Owner      MemberPosition = "owner"
+	Moderator  MemberPosition = "moderator"
+	NoPosition MemberPosition = "none"
+)
+
+type MemberMeta struct {
+	// Position 用户在空间中的职位
+	Position MemberPosition `json:"position"`
 }
 
 type ContentType string
@@ -60,42 +74,43 @@ const (
 type Content struct {
 	gorm.Model
 	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" validate:"uuid"`
+	SpaceId string `json:"space_id" binding:"uuid"`
 	// Id 内容的唯一标识符，内容标识符在一个空间当中是唯一的。
-	Id string `json:"id" validate:"uuid"`
+	Id string `json:"id" binding:"uuid"`
 	// Type 内容的类型
 	ContentType ContentType `json:"type"`
 	// CurrentHistoryId 当前的历史版本的唯一标识符
-	CurrentHistoryId string `json:"current_history_id" validate:"uuid"`
+	CurrentHistoryId string `json:"current_history_id" binding:"uuid"`
 	// LastUpdateAt 最后更新时间，UNIX时间戳UTC时区以秒为单位
 	LastUpdateAt int64 `json:"last_update_at"`
 	// Meta 内容的元数据
-	Meta string `json:"meta" validate:"json"`
+	Meta string `json:"meta" binding:"json"`
 }
 
 // ContentHistory 内容历史
 type ContentHistory struct {
+	primaryKey int64 `gorm:"primaryKey"`
 	gorm.Model
 	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" validate:"uuid"`
+	SpaceId string `json:"space_id" binding:"uuid"`
 	// ContentId 内容的唯一标识符
-	ContentId string `json:"wiki_id" validate:"uuid"`
+	ContentId string `json:"wiki_id" binding:"uuid"`
 	// Id 内容历史的唯一标识符
-	Id string `json:"id" validate:"uuid"`
+	Id string `json:"id" binding:"uuid"`
 	// OpenId 用户的OpenId
-	OpenId string `json:"openid" validate:"uuid" gorm:"column:openid"`
+	OpenId string `json:"openid" binding:"uuid" gorm:"column:openid"`
 	// Content 内容历史的内容
 	Content string `json:"content"`
 	// Time 内容历史的时间，UNIX时间戳UTC时区以秒为单位
 	Time int64 `json:"time"`
 	// Meta 内容历史的元数据
-	Meta string `json:"meta" validate:"json"`
+	Meta string `json:"meta" binding:"json"`
 }
 
+// ContentQuery 内容查询
 type ContentQuery struct {
-	gorm.Model
 	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" validate:"uuid"`
+	SpaceId string `json:"space_id" binding:"uuid"`
 	// Name 内容的名称
 	Name string `json:"name"`
 	// Type 内容的类型
@@ -112,11 +127,15 @@ type ContentQuery struct {
 type ContentLike struct {
 	gorm.Model
 	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" validate:"uuid"`
+	SpaceId string `json:"space_id" binding:"uuid"`
 	// ContentId 内容的唯一标识符
-	ContentId string `json:"content_id" validate:"uuid"`
+	ContentId string `json:"content_id" binding:"uuid"`
 	// OpenId 用户的OpenId
-	OpenId string `json:"openid" validate:"uuid" gorm:"column:openid"`
+	OpenId string `json:"openid" binding:"uuid" gorm:"column:openid"`
 	// LikedAt 点赞时间，UNIX时间戳UTC时区以秒为单位
 	LikedAt int64 `json:"liked_at"`
+}
+
+type OperationResponse struct {
+	Ok bool `json:"ok"`
 }

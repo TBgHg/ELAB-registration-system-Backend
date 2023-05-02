@@ -8,7 +8,7 @@ func ApplyGroup(engine *gin.RouterGroup) {
 	group := engine.Group("/auth")
 	{
 		group.GET("/callback", callback)
-		group.POST("/new", newLoginSession)
+		group.POST("/create", createLoginSession)
 		group.POST("/refresh", refresh)
 	}
 }

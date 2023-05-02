@@ -9,11 +9,11 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-// newLoginSession 创建一个新的登录会话
+// createLoginSession 创建一个新的登录会话
 //
 // 该接口通过输入state和code_verifier来创建一个新的登录会话，
 // code_verifier存储在Redis库中，Key是 login://<state>，Value是code_verifier
-func newLoginSession(ctx *gin.Context) {
+func createLoginSession(ctx *gin.Context) {
 	params := auth.NewSessionRequestParams{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
