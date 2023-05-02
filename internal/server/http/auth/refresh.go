@@ -17,7 +17,7 @@ func NewRefreshTokenFailedError() model.ErrorResponse {
 
 // refresh 刷新token
 func refresh(ctx *gin.Context) {
-	params := auth.RefreshRequestParams{}
+	params := auth.RefreshRequest{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
 		ctx.JSON(400, model.NewInvalidParamError())

@@ -3,53 +3,44 @@ package application
 import (
 	"elab-backend/internal/service"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func CheckLongTextFormExists(ctx *gin.Context) (bool, error) {
-	svc := service.GetService()
-	token, err := svc.Oidc.GetToken(ctx)
-	if err != nil {
-		return false, err
-	}
-	openid := token.Subject
-	var counts int64
-	err = svc.MySQL.WithContext(ctx).Model(
-		&LongTextForm{
-			OpenId: openid,
-		}).Count(&counts).Error
-	if err != nil {
-		return false, err
-	}
-	if counts == 0 {
-		return false, nil
-	}
-	return true, nil
+const InterviewRoomUriScheme = "interview-room://"
+
+// InterviewRoom 用于面试的房间
+//
+// 在Gin当中并不会被用作Request，而是作为Response.
+type InterviewRoom struct {
+	gorm.Model `json:"-"` // 不会被序列化
+	// Id 房间Id
+	RoomId string `json:"id"`
+	// Name 房间名称
+	Name string `json:"name"`
+	// Time 面试时间，应该是UNIX时间戳以秒为单位
+	Time int64 `json:"time"`
+	// Capacity 房间容量
+	Capacity int32 `json:"capacity"`
+	// CurrentOccupancy 房间已报名人数
+	CurrentOccupancy int32 `json:"current_occupancy"`
+	// Location 房间地点
+	Location string `json:"location"`
 }
 
-func UpdateLongTextForm(ctx *gin.Context, form *LongTextForm) error {
-	svc := service.GetService()
-	token, err := svc.Oidc.GetToken(ctx)
-	openid := token.Subject
-	if err != nil {
-		return err
-	}
-	// 先检查是否存在
-	exists, err := CheckLongTextFormExists(ctx)
-	if err != nil {
-		return err
-	}
-	form.OpenId = openid
-	if !exists {
-		err = svc.MySQL.WithContext(ctx).Create(&form).Error
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-	err = svc.MySQL.WithContext(ctx).Model(&LongTextForm{
-		OpenId: openid,
-	}).Save(form).Error
-	return err
+type InterviewRoomSelection struct {
+	gorm.Model `json:"-"` // 不会被序列化
+	// OpenId 用户OpenId
+	OpenId string `json:"openid" binding:"required,uuid" gorm:"column:openid"`
+	// RoomId 房间Id
+	RoomId string `json:"room_id" binding:"required,uuid" gorm:"column:room_id"`
+}
+
+type GetInterviewRoomResponse struct {
+	Rooms []InterviewRoom `json:"rooms"`
+}
+
+type InterviewRoomOperateResponse struct {
+	Ok bool `json:"ok"`
 }
 
 func GetRoom(ctx *gin.Context) (*[]InterviewRoom, error) {

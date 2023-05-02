@@ -14,7 +14,7 @@ import (
 // 该接口通过输入state和code_verifier来创建一个新的登录会话，
 // code_verifier存储在Redis库中，Key是 login://<state>，Value是code_verifier
 func createLoginSession(ctx *gin.Context) {
-	params := auth.NewSessionRequestParams{}
+	params := auth.NewSessionRequest{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
 		ctx.JSON(400, model.NewInvalidParamError())

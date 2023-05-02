@@ -17,7 +17,7 @@ func NewSessionNotFoundError() model.ErrorResponse {
 	}
 }
 
-func SetCallbackResponseParams(query *url.Values, params auth.CallbackResponseParams) {
+func SetCallbackResponseParams(query *url.Values, params auth.CallbackResponse) {
 	query.Set("access_token", params.AccessToken)
 	query.Set("refresh_token", params.RefreshToken)
 	query.Set("state", params.State)
@@ -26,7 +26,7 @@ func SetCallbackResponseParams(query *url.Values, params auth.CallbackResponsePa
 
 // callback 使用 code 换取 token
 func callback(ctx *gin.Context) {
-	params := auth.CallbackRequestParams{}
+	params := auth.CallbackRequest{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
 		ctx.JSON(400, model.NewInvalidParamError())
@@ -54,7 +54,7 @@ func callback(ctx *gin.Context) {
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
-	responseParams := auth.CallbackResponseParams{
+	responseParams := auth.CallbackResponse{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
 		State:        params.State,

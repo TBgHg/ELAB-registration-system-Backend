@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
+	"time"
 )
 
 func SetAuthSession(ctx *gin.Context, state string, session *Session) error {
@@ -51,4 +52,25 @@ func GetAuthSession(ctx *gin.Context, state string) (*Session, error) {
 		return nil, err
 	}
 	return &session, nil
+}
+
+const SessionUriScheme = "auth-session://"
+const SessionExpiration = time.Minute * 10
+
+// NewSessionRequest 使用State首先存储RedirectUri和code_verifier
+// 用于 POST /auth/new
+type NewSessionRequest struct {
+	State         string `json:"state" binding:"required"`
+	RedirectUri   string `json:"redirect_uri" binding:"required"`
+	CodeChallenge string `json:"code_challenge" binding:"required"`
+}
+
+type Session struct {
+	RedirectUri  string `json:"redirect_uri"`
+	CodeVerifier string `json:"code_verifier"`
+}
+
+// NewSessionResponse 用于 POST /auth/new 的响应格式。
+type NewSessionResponse struct {
+	Ok bool `json:"ok"`
 }
