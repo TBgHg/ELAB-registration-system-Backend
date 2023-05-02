@@ -88,11 +88,11 @@ func GetSpaceById(ctx *gin.Context, id string) (*Space, error) {
 	return &space, err
 }
 
-func CheckIsSpaceOwner(ctx *gin.Context, spaceId string) (bool, error) {
+func GetSpacePosition(ctx *gin.Context, spaceId string) (MemberPosition, error) {
 	svc := service.GetService()
 	token, err := svc.Oidc.GetToken(ctx)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 	var member Member
 	err = svc.MySQL.WithContext(ctx).Model(&Member{
@@ -100,14 +100,14 @@ func CheckIsSpaceOwner(ctx *gin.Context, spaceId string) (bool, error) {
 		OpenId:  token.Subject,
 	}).First(&member).Error
 	if err != nil {
-		return false, err
+		return "", err
 	}
 	var memberMeta MemberMeta
 	err = json.Unmarshal([]byte(member.Meta), &memberMeta)
 	if err != nil {
-		return false, err
+		return "", err
 	}
-	return memberMeta.Position == Owner, nil
+	return memberMeta.Position, nil
 }
 
 func DeleteSpaceById(ctx *gin.Context, id string) error {

@@ -18,13 +18,13 @@ func NewNotSpaceOwnerError() model.ErrorResponse {
 // 要求：用户必须是空间的创建者
 func deleteSpaceById(ctx *gin.Context) {
 	spaceId := ctx.GetString("space_id")
-	isOwner, err := space.CheckIsSpaceOwner(ctx, spaceId)
+	position, err := space.GetSpacePosition(ctx, spaceId)
 	if err != nil {
 		slog.Error("error in space.CheckIsSpaceOwner, %w", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
-	if !isOwner {
+	if position != space.Owner {
 		ctx.JSON(403, NewNotSpaceOwnerError())
 		return
 	}
