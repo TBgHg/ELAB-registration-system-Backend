@@ -9,6 +9,8 @@ type Like struct {
 	SpaceId string `json:"space_id" binding:"uuid"`
 	// ContentId 内容的唯一标识符
 	ContentId string `json:"content_id" binding:"uuid"`
+	// ContentType 内容的类型
+	ContentType Type `json:"content_type" binding:"required"`
 	// OpenId 用户的OpenId
 	OpenId string `json:"openid" binding:"uuid" gorm:"column:openid"`
 	// LikedAt 点赞时间，UNIX时间戳UTC时区以秒为单位

@@ -28,6 +28,7 @@ func (s *Service) GetLock(ctx context.Context, key string) (func(), error) {
 				s.Client.Del(ctx, key)
 			}, nil
 		}
+		time.Sleep(RetryInterval)
 	}
 	return nil, &GetLockTimeoutError{}
 }

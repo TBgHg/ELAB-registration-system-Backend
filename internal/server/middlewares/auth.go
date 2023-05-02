@@ -37,13 +37,6 @@ func NewGetOidcUserinfoFailedErrorResponse() model.ErrorResponse {
 	}
 }
 
-func NewNoUuidErrorResponse() model.ErrorResponse {
-	return model.ErrorResponse{
-		Error:   "no_uuid",
-		Message: "URL当中没有包含uuid，请确认您的URL是否正确。",
-	}
-}
-
 func NewUuidOidcSubMismatchErrorResponse() model.ErrorResponse {
 	return model.ErrorResponse{
 		Error:   "uuid_oidc_sub_mismatch",

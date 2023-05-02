@@ -8,7 +8,9 @@ type History struct {
 	// SpaceId 空间的唯一标识符
 	SpaceId string `json:"space_id" binding:"uuid"`
 	// ContentId 内容的唯一标识符
-	ContentId string `json:"wiki_id" binding:"uuid"`
+	ContentId string `json:"content_id" binding:"uuid"`
+	// ContentType 内容的类型
+	ContentType Type `json:"content_type" binding:"oneof=wiki thread comment"`
 	// HistoryId 内容历史的唯一标识符
 	HistoryId string `json:"history_id" binding:"uuid"`
 	// OpenId 用户的OpenId

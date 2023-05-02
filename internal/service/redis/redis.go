@@ -9,13 +9,12 @@ type Service struct {
 	Client *redis.Client
 }
 
-func NewService() *Service {
-	config := configs.GetConfig()
+func NewService(conf *configs.Config) *Service {
 	return &Service{
 		Client: redis.NewClient(&redis.Options{
-			Addr:     config.Redis.Address,
-			Password: config.Redis.Password,
-			DB:       config.Redis.Database,
+			Addr:     conf.Redis.Address,
+			Password: conf.Redis.Password,
+			DB:       conf.Redis.Database,
 		}),
 	}
 }

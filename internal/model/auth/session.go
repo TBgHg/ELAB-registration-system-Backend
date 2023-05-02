@@ -28,9 +28,24 @@ func SetAuthSession(ctx *gin.Context, state string, session *Session) error {
 	return nil
 }
 
+type SessionNotFoundError struct{}
+
+func (e SessionNotFoundError) Error() string {
+	return "session_not_found"
+}
+
 func GetAuthSession(ctx *gin.Context, state string) (*Session, error) {
 	svc := service.GetService()
 	key := SessionUriScheme + state
+	exists, err := svc.Redis.Client.Exists(ctx, key).Result()
+	if err != nil {
+		err = fmt.Errorf("redis.Exists failed: %w", err)
+		slog.Error(err.Error())
+		return nil, err
+	}
+	if exists == 0 {
+		return nil, SessionNotFoundError{}
+	}
 	marshalledSession, err := svc.Redis.Client.Get(ctx, key).Result()
 	if err != nil {
 		err = fmt.Errorf("redis.Get failed: %w", err)

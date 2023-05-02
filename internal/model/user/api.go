@@ -114,7 +114,7 @@ func UpdateUserLastLogin(ctx *gin.Context, openid string) error {
 	svc := service.GetService()
 	err := svc.MySQL.WithContext(ctx).Model(&User{
 		OpenId: openid,
-	}).Updates(User{
+	}).Updates(&User{
 		LastLoginAt: time.Now().UTC().Unix(),
 	}).Error
 	return err
@@ -124,6 +124,6 @@ func UpdateUser(ctx *gin.Context, openid string, updateBody User) error {
 	svc := service.GetService()
 	err := svc.MySQL.WithContext(ctx).Model(&User{
 		OpenId: openid,
-	}).Updates(updateBody).Error
+	}).Updates(&updateBody).Error
 	return err
 }

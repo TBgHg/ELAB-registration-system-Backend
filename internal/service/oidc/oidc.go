@@ -2,6 +2,7 @@ package oidc
 
 import (
 	"context"
+	"elab-backend/configs"
 	"fmt"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/exp/slog"
@@ -46,10 +47,10 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*oauth
 }
 
 // NewService 新服务
-func NewService(config *Config) (*Service, error) {
+func NewService(config *configs.Config) (*Service, error) {
 	// 新建一个上下文
 	ctx := context.Background()
-	provider, err := oidc.NewProvider(ctx, config.Issuer)
+	provider, err := oidc.NewProvider(ctx, config.Oidc.Issuer)
 	if err != nil {
 		err = fmt.Errorf("无法获取OIDC Provider: %w", err)
 		slog.Error(err.Error())
@@ -72,12 +73,18 @@ func NewService(config *Config) (*Service, error) {
 	remoteKeySet := oidc.NewRemoteKeySet(ctx, providerClaims.JwksUri)
 	// Verifier按道理讲应该是IDToken的验证工具
 	// 不过神奇的发现，AccessToken和IDToken的结构体是一样的！
-	verifier := provider.Verifier(&oidc.Config{ClientID: config.OAuthConfig.ClientID})
+	verifier := provider.Verifier(&oidc.Config{ClientID: config.Oidc.ClientID})
 	service := &Service{
 		Provider:     provider,
 		RemoteKeySet: remoteKeySet,
 		Verifier:     verifier,
-		OAuthConfig:  config.OAuthConfig,
+		OAuthConfig: &oauth2.Config{
+			ClientID:     config.Oidc.ClientID,
+			ClientSecret: config.Oidc.ClientSecret,
+			Endpoint:     provider.Endpoint(),
+			RedirectURL:  config.Oidc.RedirectURL,
+			Scopes:       []string{"openid", "profile", "email"},
+		},
 	}
 	return service, nil
 }

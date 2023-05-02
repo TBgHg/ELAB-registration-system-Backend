@@ -25,6 +25,8 @@ type User struct {
 	IsElabMember bool `json:"is_elab_member"`
 	// Meta 用户的元数据
 	Meta string `json:"meta" binding:"json"`
+	// Email 用户的邮箱
+	Email string `json:"email"`
 }
 
 type SpaceListResponse struct {

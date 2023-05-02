@@ -5,6 +5,7 @@ import (
 	"elab-backend/internal/model/auth"
 	"elab-backend/internal/model/user"
 	"elab-backend/internal/service"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
 	"net/url"
@@ -36,6 +37,10 @@ func callback(ctx *gin.Context) {
 	svc := service.GetService()
 	session, err := auth.GetAuthSession(ctx, params.State)
 	if err != nil {
+		if errors.Is(err, auth.SessionNotFoundError{}) {
+			ctx.JSON(404, NewSessionNotFoundError())
+			return
+		}
 		slog.ErrorCtx(ctx, "redis.GetAuthSession failed %w", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return

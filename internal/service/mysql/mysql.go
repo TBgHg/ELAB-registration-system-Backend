@@ -8,14 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewService() (*gorm.DB, error) {
-	config := configs.GetConfig()
+func NewService(conf *configs.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
-		config.MySQL.DSN,
-		config.MySQL.Username,
-		config.MySQL.Password,
-		config.MySQL.Address,
-		config.MySQL.Database,
+		conf.MySQL.DSN,
+		conf.MySQL.Username,
+		conf.MySQL.Password,
+		conf.MySQL.Address,
+		conf.MySQL.Database,
 	)
 	db, err := gorm.Open(
 		mysql.Open(dsn),
