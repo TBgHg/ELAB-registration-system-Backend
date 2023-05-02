@@ -3,8 +3,10 @@ package space
 import (
 	"elab-backend/internal/service"
 	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Query struct {
@@ -108,6 +110,39 @@ func GetSpacePosition(ctx *gin.Context, spaceId string) (MemberPosition, error) 
 		return "", err
 	}
 	return memberMeta.Position, nil
+}
+
+func CheckIsSpacePublicPermissionGranted(ctx *gin.Context, spaceId string) (bool, error) {
+	svc := service.GetService()
+	// 判断能否有公开权限有两种方法：
+	// 1. 判断空间是否不是私密空间
+	// 2. 判断用户是否在空间中
+	spaceQuery := Space{
+		Id: spaceId,
+	}
+	err := svc.MySQL.WithContext(ctx).First(&spaceQuery).Error
+	if err != nil {
+		return false, err
+	}
+	if !spaceQuery.Private {
+		return true, nil
+	}
+	token, err := svc.Oidc.GetToken(ctx)
+	if err != nil {
+		return false, err
+	}
+	member := Member{
+		SpaceId: spaceId,
+		OpenId:  token.Subject,
+	}
+	err = svc.MySQL.WithContext(ctx).First(&member).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func DeleteSpaceById(ctx *gin.Context, id string) error {

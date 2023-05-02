@@ -13,7 +13,7 @@ func ApplyGroup(engine *gin.RouterGroup) {
 		idSpecifiedGroup := group.Group("/:space_id")
 		idSpecifiedGroup.Use(middlewares.SpaceIdRequiredMiddleware())
 		{
-			idSpecifiedGroup.GET("", getSpaceById)
+			idSpecifiedGroup.GET("", middlewares.SpacePublicPermissionMiddleware(), getSpaceById)
 			idSpecifiedGroup.DELETE("", deleteSpaceById)
 		}
 	}
