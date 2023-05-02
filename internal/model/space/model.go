@@ -6,47 +6,15 @@ import "gorm.io/gorm"
 //
 // 空间是OneELAB组织人员的最小单位。
 type Space struct {
-	gorm.Model
-	primaryKey int64 `gorm:"primaryKey"`
-	// Id 空间的唯一标识符
-	Id string `json:"id" binding:"uuid"`
+	gorm.Model `json:"-"` // 隐藏gorm.Model
+	// SpaceId 空间的唯一标识符
+	SpaceId string `json:"space_id" binding:"uuid"`
 	// Name 空间的名称
 	Name string `json:"name"`
 	// Description 空间的描述
 	Description string `json:"description"`
 	// Private 空间是否为私有空间
 	Private bool `json:"private"`
-}
-
-// Member 空间成员
-type Member struct {
-	gorm.Model
-	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" binding:"uuid"`
-	// OpenId 用户的OpenId
-	OpenId string `json:"openid" binding:"uuid" gorm:"column:openid"`
-	// Position 用户在空间中的职位
-	//
-	// 可能的值有：
-	//  - owner
-	//  - moderator
-	//  - member
-	Position string `json:"position"`
-	// Meta 用户在空间中的元数据
-	Meta string `json:"meta" binding:"json"`
-}
-
-type MemberPosition string
-
-const (
-	Owner      MemberPosition = "owner"
-	Moderator  MemberPosition = "moderator"
-	NoPosition MemberPosition = "none"
-)
-
-type MemberMeta struct {
-	// Position 用户在空间中的职位
-	Position MemberPosition `json:"position"`
 }
 
 type ContentType string
@@ -72,11 +40,11 @@ const (
 //   - Thread
 //   - Comment
 type Content struct {
-	gorm.Model
+	gorm.Model `json:"-"` // 隐藏gorm.Model
 	// SpaceId 空间的唯一标识符
 	SpaceId string `json:"space_id" binding:"uuid"`
-	// Id 内容的唯一标识符，内容标识符在一个空间当中是唯一的。
-	Id string `json:"id" binding:"uuid"`
+	// ContentId 内容的唯一标识符，内容标识符在一个空间当中是唯一的。
+	ContentId string `json:"content_id" binding:"uuid"`
 	// Type 内容的类型
 	ContentType ContentType `json:"type"`
 	// CurrentHistoryId 当前的历史版本的唯一标识符
@@ -89,14 +57,13 @@ type Content struct {
 
 // ContentHistory 内容历史
 type ContentHistory struct {
-	primaryKey int64 `gorm:"primaryKey"`
-	gorm.Model
+	gorm.Model `json:"-"` // 隐藏gorm.Model
 	// SpaceId 空间的唯一标识符
 	SpaceId string `json:"space_id" binding:"uuid"`
 	// ContentId 内容的唯一标识符
 	ContentId string `json:"wiki_id" binding:"uuid"`
-	// Id 内容历史的唯一标识符
-	Id string `json:"id" binding:"uuid"`
+	// HistoryId 内容历史的唯一标识符
+	HistoryId string `json:"history_id" binding:"uuid"`
 	// OpenId 用户的OpenId
 	OpenId string `json:"openid" binding:"uuid" gorm:"column:openid"`
 	// Content 内容历史的内容
@@ -125,7 +92,7 @@ type ContentQuery struct {
 
 // ContentLike 内容点赞
 type ContentLike struct {
-	gorm.Model
+	gorm.Model `json:"-"` // 隐藏gorm.Model
 	// SpaceId 空间的唯一标识符
 	SpaceId string `json:"space_id" binding:"uuid"`
 	// ContentId 内容的唯一标识符

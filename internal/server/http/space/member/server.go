@@ -7,7 +7,7 @@ func ApplyGroup(engine *gin.RouterGroup) {
 	{
 		group.GET("", getMemberList)
 		group.POST("", operateMember)
-		group.POST("/:member_id", updateMemberByID)
-		group.DELETE("/:member_id", deleteMemberByID)
+		group.POST("/:openid", operateMemberById)
+		group.DELETE("/:openid", deleteMemberById)
 	}
 }

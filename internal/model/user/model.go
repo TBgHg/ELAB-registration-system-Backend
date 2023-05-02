@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	gorm.Model
+	gorm.Model `json:"-"`
 	// OpenId 用户的OpenID
 	OpenId string `json:"openid" binding:"required,uuid" gorm:"column:openid"`
 	// Name 用户的名字。

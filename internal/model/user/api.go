@@ -2,6 +2,7 @@ package user
 
 import (
 	"elab-backend/internal/model/space"
+	"elab-backend/internal/model/space/member"
 	"elab-backend/internal/service"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -95,9 +96,9 @@ func GetUserSpaces(ctx *gin.Context) (*[]space.Space, error) {
 	userMatch := token.Subject == openid
 	// 构建一个比较复杂的SQL查询：
 	// Member当中，OpenId = openid
-	// Space当中，Id = Member.SpaceId, Private = false
+	// Space当中，ContentId = Member.SpaceId, Private = false
 	db := svc.MySQL.Model(&space.Space{}).Joins(
-		"JOIN member ON member.space_id = space.id").Where(&space.Member{OpenId: openid})
+		"JOIN member ON member.space_id = space.id").Where(&member.Member{OpenId: openid})
 	if !userMatch {
 		db = db.Where(&space.Space{Private: false})
 	}

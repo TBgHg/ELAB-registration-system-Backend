@@ -1,6 +1,7 @@
 package space
 
 import (
+	"elab-backend/internal/server/http/space/member"
 	"elab-backend/internal/server/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -16,5 +17,6 @@ func ApplyGroup(engine *gin.RouterGroup) {
 			idSpecifiedGroup.GET("", middlewares.SpacePublicPermissionMiddleware(), getSpaceById)
 			idSpecifiedGroup.DELETE("", deleteSpaceById)
 		}
+		member.ApplyGroup(group)
 	}
 }

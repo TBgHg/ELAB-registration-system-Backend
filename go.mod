@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/gin-contrib/requestid v0.0.6
 	github.com/gin-gonic/gin v1.9.0
-	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
 	github.com/redis/go-redis/v9 v9.0.3
 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53

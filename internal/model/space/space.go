@@ -1,6 +1,7 @@
 package space
 
 import (
+	"elab-backend/internal/model/space/member"
 	"elab-backend/internal/service"
 	"encoding/json"
 	"errors"
@@ -41,10 +42,10 @@ func SearchSpace(ctx *gin.Context, query *Query) (*[]Space, error) {
 	// 不做这个查询，将会合并spaces和members表，导致查询结果不正确
 	db = db.Select("spaces.*")
 	// 这是连接查询的重要部分
-	db = db.InnerJoins("members", "members.space_id = spaces.id")
+	db = db.InnerJoins("members", "members.space_id = spaces.space_id")
 	privateQuery := db.Model(&Space{Private: false})
 	// 像这样的查询，可以作为一个SubQuery直接嵌入查询语句中
-	userQuery := db.Model(&Member{OpenId: token.Subject})
+	userQuery := db.Model(&member.Member{OpenId: token.Subject})
 	if query.Name != "" {
 		// 这里的?占位符可以嵌入子查询
 		db = db.Where("spaces.name LIKE ? AND (? OR ?)", "%"+query.Name+"%", privateQuery, userQuery)
@@ -63,21 +64,21 @@ func CreateSpace(ctx *gin.Context, space *Space) error {
 	if err != nil {
 		return err
 	}
-	space.Id = uuid.NewString()
+	space.SpaceId = uuid.NewString()
 	svc.MySQL.WithContext(ctx).Create(space)
-	member := Member{
-		SpaceId: space.Id,
+	selfMember := member.Member{
+		SpaceId: space.SpaceId,
 		OpenId:  token.Subject,
 	}
-	memberMeta := MemberMeta{
-		Position: Owner,
+	memberMeta := member.Meta{
+		Position: member.Owner,
 	}
 	marshalledMeta, err := json.Marshal(memberMeta)
 	if err != nil {
 		return err
 	}
-	member.Meta = string(marshalledMeta)
-	svc.MySQL.WithContext(ctx).Create(&member)
+	selfMember.Meta = string(marshalledMeta)
+	svc.MySQL.WithContext(ctx).Create(&selfMember)
 	return nil
 }
 
@@ -85,31 +86,9 @@ func GetSpaceById(ctx *gin.Context, id string) (*Space, error) {
 	svc := service.GetService()
 	var space Space
 	err := svc.MySQL.WithContext(ctx).Model(&Space{
-		Id: id,
+		SpaceId: id,
 	}).First(&space).Error
 	return &space, err
-}
-
-func GetSpacePosition(ctx *gin.Context, spaceId string) (MemberPosition, error) {
-	svc := service.GetService()
-	token, err := svc.Oidc.GetToken(ctx)
-	if err != nil {
-		return "", err
-	}
-	var member Member
-	err = svc.MySQL.WithContext(ctx).Model(&Member{
-		SpaceId: spaceId,
-		OpenId:  token.Subject,
-	}).First(&member).Error
-	if err != nil {
-		return "", err
-	}
-	var memberMeta MemberMeta
-	err = json.Unmarshal([]byte(member.Meta), &memberMeta)
-	if err != nil {
-		return "", err
-	}
-	return memberMeta.Position, nil
 }
 
 func CheckIsSpacePublicPermissionGranted(ctx *gin.Context, spaceId string) (bool, error) {
@@ -118,7 +97,7 @@ func CheckIsSpacePublicPermissionGranted(ctx *gin.Context, spaceId string) (bool
 	// 1. 判断空间是否不是私密空间
 	// 2. 判断用户是否在空间中
 	spaceQuery := Space{
-		Id: spaceId,
+		SpaceId: spaceId,
 	}
 	err := svc.MySQL.WithContext(ctx).First(&spaceQuery).Error
 	if err != nil {
@@ -131,11 +110,11 @@ func CheckIsSpacePublicPermissionGranted(ctx *gin.Context, spaceId string) (bool
 	if err != nil {
 		return false, err
 	}
-	member := Member{
+	targetMember := member.Member{
 		SpaceId: spaceId,
 		OpenId:  token.Subject,
 	}
-	err = svc.MySQL.WithContext(ctx).First(&member).Error
+	err = svc.MySQL.WithContext(ctx).First(&targetMember).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
@@ -148,12 +127,12 @@ func CheckIsSpacePublicPermissionGranted(ctx *gin.Context, spaceId string) (bool
 func DeleteSpaceById(ctx *gin.Context, id string) error {
 	svc := service.GetService()
 	err := svc.MySQL.WithContext(ctx).Delete(&Space{
-		Id: id,
+		SpaceId: id,
 	}).Error
 	if err != nil {
 		return err
 	}
-	err = svc.MySQL.WithContext(ctx).Delete(&Member{
+	err = svc.MySQL.WithContext(ctx).Delete(&member.Member{
 		SpaceId: id,
 	}).Error
 	return err

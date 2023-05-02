@@ -64,7 +64,7 @@ func GetRoom(ctx *gin.Context) (*[]InterviewRoom, error) {
 
 func GetRoomById(ctx *gin.Context, roomId string) (*InterviewRoom, error) {
 	room := InterviewRoom{
-		Id: roomId,
+		RoomId: roomId,
 	}
 	svc := service.GetService()
 	err := svc.MySQL.WithContext(ctx).First(&room).Error
@@ -123,11 +123,11 @@ func SetRoom(ctx *gin.Context, roomSelection *InterviewRoomSelection) error {
 		return err
 	}
 	targetRoom := InterviewRoom{
-		Id: roomSelection.RoomId,
+		RoomId: roomSelection.RoomId,
 	}
 	// 然后再更新InterviewRoom
 	err = svc.MySQL.WithContext(ctx).Model(&InterviewRoom{
-		Id: roomSelection.RoomId,
+		RoomId: roomSelection.RoomId,
 	}).First(&targetRoom).Error
 	if err != nil {
 		return err
@@ -158,7 +158,7 @@ func DeleteRoom(ctx *gin.Context) error {
 	}
 	// 同时再从InterviewRoom中减去1
 	targetRoom := InterviewRoom{
-		Id: roomId,
+		RoomId: roomId,
 	}
 	err = svc.MySQL.WithContext(ctx).First(&targetRoom).Error
 	if err != nil {

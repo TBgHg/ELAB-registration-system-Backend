@@ -8,7 +8,8 @@ const InterviewRoomUriScheme = "interview-room://"
 //
 // 在Gin当中，会被用作Request
 type LongTextForm struct {
-	gorm.Model
+	gorm.Model `json:"-"` // 不会被序列化
+	// OpenId 用户OpenId
 	OpenId string `json:"openid" binding:"required,uuid" gorm:"column:openid"`
 	// 加入原因
 	Reason string `json:"reason"`
@@ -22,9 +23,9 @@ type LongTextForm struct {
 //
 // 在Gin当中并不会被用作Request，而是作为Response.
 type InterviewRoom struct {
-	gorm.Model
+	gorm.Model `json:"-"` // 不会被序列化
 	// Id 房间Id
-	Id string `json:"id"`
+	RoomId string `json:"id"`
 	// Name 房间名称
 	Name string `json:"name"`
 	// Time 面试时间，应该是UNIX时间戳以秒为单位
@@ -38,7 +39,7 @@ type InterviewRoom struct {
 }
 
 type InterviewRoomSelection struct {
-	gorm.Model
+	gorm.Model `json:"-"` // 不会被序列化
 	// OpenId 用户OpenId
 	OpenId string `json:"openid" binding:"required,uuid" gorm:"column:openid"`
 	// RoomId 房间Id
