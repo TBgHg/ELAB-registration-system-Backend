@@ -54,6 +54,7 @@ func OAuthLoginRequiredMiddleware() gin.HandlerFunc {
 		if authHeader == "" {
 			ctx.AbortWithStatusJSON(403, NewUnauthorizedErrorResponse())
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "unauthorized")
+			return
 		}
 		// 通过空格分割authHeader
 		// authHeader格式为：Bearer <token>
@@ -62,17 +63,20 @@ func OAuthLoginRequiredMiddleware() gin.HandlerFunc {
 		if len(authHeaderSplit) != 2 {
 			ctx.AbortWithStatusJSON(403, NewAuthorizationValueErrorResponse())
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "authorization_value_error")
+			return
 		}
 		authType, accessToken := authHeaderSplit[0], authHeaderSplit[1]
 		if authType != "Bearer" {
 			ctx.AbortWithStatusJSON(403, NewAuthorizationValueErrorResponse())
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "authorization_value_error")
+			return
 		}
 		// 验证token
 		_, err := svc.Oidc.RemoteKeySet.VerifySignature(ctx, accessToken)
 		if err != nil {
 			ctx.AbortWithStatusJSON(403, NewJwtInvalidErrorResponse())
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "jwt_invalid", "detail", err)
+			return
 		}
 		ctx.Set("access_token", accessToken)
 		ctx.Next()

@@ -52,6 +52,7 @@ func callback(ctx *gin.Context) {
 		slog.ErrorCtx(ctx, "oidc.TokenExchange failed", "error", err)
 		slog.Error("code_verifier %v", session.CodeVerifier)
 		ctx.JSON(500, model.NewInternalServerError())
+		return
 	}
 	ctx.Set("access_token", token.AccessToken)
 	// 开始构建响应，需要access_token, refresh_token, state, code_verifier
