@@ -42,7 +42,7 @@ func Get(ctx *gin.Context, request *GetRequest) (*GetResponse, error) {
 		return nil, err
 	}
 	var results []GetDbQueryResult
-	err = db.Offset(offset).Limit(limit).Find(&results).Error
+	err = db.Offset(offset).Limit(limit).Scan(&results).Error
 	if err != nil {
 		return nil, err
 	}

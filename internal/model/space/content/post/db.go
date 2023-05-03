@@ -13,58 +13,34 @@ import (
 func BuildDatabaseQuery(ctx *gin.Context, query *content.Query, contentType content.Type) *gorm.DB {
 	svc := service.GetService()
 	db := svc.MySQL.WithContext(ctx)
-	selectQuery := `
-contents.content_id as content_id, 
-contents.current_history_id as current_history_id, 
-contents.last_update_at as last_update_at,
-histories.openid as openid,
-users.name as name,
-users.email as email,
-histories.meta as meta`
-	switch query.OrderBy {
-	case content.TimeDesc:
-		selectQuery += "FROM contents"
-		break
-	case content.LikeDesc:
-		selectQuery += ", COUNT(likes.content_id) as _counts FROM contents"
-		break
-	}
-	db = db.Select(
-		selectQuery,
-	).InnerJoins(
-		"histories", `(histories.content_id = contents.content_id)
-AND (histories.content_type = contents.content_type)
-AND (histories.space_id = contents.space_id)
-AND (histories.history_id = contents.current_history_id)`,
-	).InnerJoins(
-		"users", "users.openid = histories.openid",
-	)
-	if query.OrderBy == content.LikeDesc {
-		db = db.InnerJoins(
-			"likes",
-			`
-(likes.content_id = contents.content_id) AND
-(likes.content_type = contents.content_type)
-`,
-		)
-	}
-	db = db.Where(&content.Content{
-		SpaceId:     query.SpaceId,
-		ContentType: contentType,
-	})
-	if query.Name != "" {
-		db = db.Where(
-			"meta->'$.title' LIKE ? AND space_id = ? AND content_type = ?",
-			"%"+query.Name+"%",
-			query.SpaceId, contentType,
-		)
-	}
+	db = db.Raw(`
+SELECT
+	c.content_id as content_id, 
+	c.current_history_id as current_history_id, 
+	c.last_update_at as last_update_at,
+	h.openid as openid,
+	u.name as name,
+	u.email as email,
+	h.meta as meta,
+	COUNT(l.content_id) as like_counts
+FROM contents c, histories h, users u, likes l
+INNER JOIN histories h ON
+    (h.content_id = c.content_id) AND
+    (h.content_type = c.content_type) AND
+    (h.space_id = c.space_id) AND
+    (h.history_id = c.current_history_id)
+INNER JOIN users u ON u.openid = h.openid
+INNER JOIN likes l ON l.content_id = c.content_id AND l.content_type = c.content_type
+WHERE (c.deleted_at IS NULL AND h.deleted_at IS NULL AND u.deleted_at IS NULL AND l.deleted_at IS NULL)
+AND h.meta->'$.title' LIKE '%?%' AND h.space_id = ? AND h.content_type = ?
+GROUP BY c.content_id, c.current_history_id, c.last_update_at, h.openid, u.name, u.email, h.meta
+`, query.Name, query.SpaceId, contentType)
 	switch query.OrderBy {
 	case content.TimeDesc:
 		db = db.Order("last_update_at DESC")
 		break
 	case content.LikeDesc:
-		db = db.Order("_counts DESC")
+		db = db.Order("like_counts DESC")
 		break
 	}
 	return db

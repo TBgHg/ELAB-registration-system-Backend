@@ -95,8 +95,17 @@ func GetUserSpaces(ctx *gin.Context) (*[]Space, error) {
 	// Member当中，OpenId = openid
 	// Space当中，ContentId = Member.SpaceId, Private = false
 	db := svc.MySQL.WithContext(ctx)
-	normalSql := db.Raw("SELECT s.* FROM spaces s INNER JOIN members m ON m.space_id = s.space_id AND m.openid = ? GROUP BY s.space_id", openid)
-	notUserMatch := db.Raw("SELECT s.* FROM spaces s INNER JOIN members m ON m.space_id = s.space_id AND m.openid = ? WHERE s.private = false GROUP BY m.space_id", openid)
+	normalSql := db.Raw(`
+	SELECT s.* FROM spaces s
+    INNER JOIN members m
+    ON m.space_id = s.space_id
+	WHERE m.openid = ?
+    GROUP BY s.space_id`, openid)
+	notUserMatch := db.Raw(`SELECT s.* FROM spaces s
+    INNER JOIN members m 
+    ON m.space_id = s.space_id
+    WHERE m.openid = ? AND s.private = false
+    GROUP BY m.space_id`, openid)
 	if userMatch {
 		db = normalSql
 	} else {

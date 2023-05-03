@@ -30,7 +30,7 @@ func Search(ctx *gin.Context, query *content.Query, contentType content.Type) (*
 	// contents.*, histories.openid, users.email [_counts]
 	// 由于属于自定义查表，因此需要重新定义一个结构体
 	var dbQueryResult []content.SearchDatabaseResult
-	err := db.Offset(offset).Limit(size).Find(&dbQueryResult).Error
+	err := db.Offset(offset).Limit(size).Scan(&dbQueryResult).Error
 	if err != nil {
 		return nil, err
 	}

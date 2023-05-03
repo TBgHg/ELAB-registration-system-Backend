@@ -4,5 +4,5 @@ import "elab-backend/internal/service"
 
 func Init() error {
 	svc := service.GetService()
-	return svc.MySQL.AutoMigrate(&Content{}, &Like{})
+	return svc.MySQL.AutoMigrate(&Content{}, &Like{}, &History{})
 }

@@ -13,33 +13,30 @@ func BuildDatabaseQuery(ctx *gin.Context, query *GetRequest) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	selectQuery := `
-contents.content_id as content_id, 
-contents.last_update_at as last_update_at,
-histories.content as content,
-histories.openid as openid,
-users.name as name,
-users.email as email,
-COUNT(likes.content_id) as like_counts
-COUNT(likes.openid = ?) = 1 as is_liked
-`
-	db := svc.MySQL.WithContext(ctx).Select(
-		selectQuery, token.Subject,
-	).InnerJoins(
-		"histories", `(histories.content_id = contents.content_id)
-AND (histories.content_type = contents.content_type)
-AND (histories.space_id = contents.space_id)
-AND (histories.history_id = contents.current_history_id)`,
-	).InnerJoins(
-		"users", "users.openid = histories.openid",
-	).InnerJoins(
-		"likes", `
-(likes.content_id = contents.content_id) AND
-(likes.content_type = contents.content_type)
-`,
-	).Where(&content.Content{
-		SpaceId:     query.SpaceId,
-		ContentType: content.Comment,
-	}).Where("meta->'$.thread_id' = ?", query.ThreadId).Group("contents.content_id")
+	db := svc.MySQL.WithContext(ctx).Raw(`
+SELECT
+	c.content_id as content_id, 
+	c.last_update_at as last_update_at,
+	h.content as content,
+	h.openid as openid,
+	u.name as name,
+	u.email as email,
+	COUNT(l.content_id) as like_counts,
+	COUNT(l.openid = @openid) = 1 as is_liked
+FROM contents c, histories h, users u, likes l
+INNER JOIN histories h
+	ON (h.content_id = c.content_id) AND
+	(h.content_type = c.content_type) AND
+	(h.space_id = c.space_id) AND
+	(h.history_id = c.current_history_id)
+INNER JOIN users u ON u.openid = h.openid
+INNER JOIN likes l ON l.content_id = c.content_id AND l.content_type = c.content_type
+WHERE
+    c.space_id = ? AND c.content_type = ? AND
+		c.deleted_at IS NULL AND h.deleted_at IS NULL AND u.deleted_at IS NULL AND l.deleted_at IS NULL AND
+		h.meta->'$.thread_id' = ?
+GROUP BY c.content_id, c.last_update_at, h.content, h.openid, u.name, u.email
+
+`, token.Subject, query.SpaceId, content.Thread, query.ThreadId)
 	return db, nil
 }
