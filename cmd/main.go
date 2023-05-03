@@ -2,11 +2,13 @@ package main
 
 import (
 	"elab-backend/configs"
-	"elab-backend/internal/server/http"
+	"elab-backend/internal/model"
+	"elab-backend/internal/server/http/server"
 	"elab-backend/internal/service"
 	"flag"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slog"
+	"os"
 )
 
 var configDirectory string
@@ -19,31 +21,24 @@ func flagInit() {
 
 func main() {
 	flagInit()
-	// 调用Init函数，读取配置文件
 	err := configs.Init(configDirectory)
 	if err != nil {
-		slog.Error("无法读取配置：%w", err)
-		return
+		panic(err)
 	}
-	conf := configs.GetConfig()
-	if conf == nil {
-		slog.Error("config.conf似乎是一个空指针，请确认是否已经调用了Init函数")
-		return
-	}
-
-	// 创建一个默认的路由引擎
-	svc, err := service.NewService(conf)
+	err = service.Init(configs.GetConfig())
 	if err != nil {
-		slog.Error("无法创建服务：%w", err)
-		return
+		panic(err)
 	}
-	// 创建一个Gin实例
-	r := gin.Default()
-	http.Init(r, svc)
-	// 启动服务
-	err = r.Run(conf.Http.BindAddress)
+	engine := gin.Default()
+	server.Init(engine)
+	gin.SetMode(gin.DebugMode)
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr)))
+	err = model.Init()
 	if err != nil {
-		slog.Error("无法启动服务：%w", err)
-		return
+		panic(err)
+	}
+	err = engine.Run(configs.GetConfig().Http.BindAddress)
+	if err != nil {
+		panic(err)
 	}
 }

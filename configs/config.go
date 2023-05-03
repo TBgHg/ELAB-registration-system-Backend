@@ -130,7 +130,7 @@ func Init(configFilePath string) error {
 	if err := viper.ReadInConfig(); err != nil {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
-	if err := BindEnvs(&conf); err != nil {
+	if err := BindEnvs(conf); err != nil {
 		return fmt.Errorf("failed to bind envs: %w", err)
 	}
 	if err := loadConfig(); err != nil {

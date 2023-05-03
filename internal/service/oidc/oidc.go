@@ -2,6 +2,7 @@ package oidc
 
 import (
 	"context"
+	"elab-backend/configs"
 	"fmt"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/exp/slog"
@@ -21,7 +22,7 @@ type Service struct {
 	Provider *oidc.Provider
 	// RemoteKeySet 远程密钥集，用于对 JWT 进行验证
 	RemoteKeySet *oidc.RemoteKeySet
-	// IdTokenVerifier IdToken验证器
+	// Verifier IdToken验证器，不过也能用于验证AccessToken
 	Verifier *oidc.IDTokenVerifier
 	// OAuthConfig OAuth 配置
 	OAuthConfig *oauth2.Config
@@ -39,11 +40,17 @@ type UserInfoClaims struct {
 	Picture string `json:"picture"`
 }
 
+func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*oauth2.Token, error) {
+	return s.OAuthConfig.TokenSource(ctx, &oauth2.Token{
+		RefreshToken: refreshToken,
+	}).Token()
+}
+
 // NewService 新服务
-func NewService(config *Config) (*Service, error) {
+func NewService(config *configs.Config) (*Service, error) {
 	// 新建一个上下文
 	ctx := context.Background()
-	provider, err := oidc.NewProvider(ctx, config.Issuer)
+	provider, err := oidc.NewProvider(ctx, config.Oidc.Issuer)
 	if err != nil {
 		err = fmt.Errorf("无法获取OIDC Provider: %w", err)
 		slog.Error(err.Error())
@@ -64,12 +71,20 @@ func NewService(config *Config) (*Service, error) {
 	}
 	// RemoteKeySet 是一个远程密钥集，用于对 JWT 进行验证
 	remoteKeySet := oidc.NewRemoteKeySet(ctx, providerClaims.JwksUri)
-	verifier := provider.Verifier(&oidc.Config{ClientID: config.OAuthConfig.ClientID})
+	// Verifier按道理讲应该是IDToken的验证工具
+	// 不过神奇的发现，AccessToken和IDToken的结构体是一样的！
+	verifier := provider.Verifier(&oidc.Config{ClientID: config.Oidc.ClientID})
 	service := &Service{
 		Provider:     provider,
 		RemoteKeySet: remoteKeySet,
 		Verifier:     verifier,
-		OAuthConfig:  config.OAuthConfig,
+		OAuthConfig: &oauth2.Config{
+			ClientID:     config.Oidc.ClientID,
+			ClientSecret: config.Oidc.ClientSecret,
+			Endpoint:     provider.Endpoint(),
+			RedirectURL:  config.Oidc.RedirectURL,
+			Scopes:       []string{"openid", "profile", "email"},
+		},
 	}
 	return service, nil
 }
