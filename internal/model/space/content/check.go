@@ -62,11 +62,11 @@ func CheckOperatorPermission(ctx *gin.Context, contentType Type) (bool, error) {
 	default:
 		return false, fmt.Errorf("invalid content type: %s", contentType)
 	}
-	spaceId := ctx.GetString("space_id")
+	spaceId := ctx.Param("space_id")
 	if spaceId == "" {
 		return false, fmt.Errorf("space id not found in context")
 	}
-	contentId := ctx.GetString(contentIdKey)
+	contentId := ctx.Param(contentIdKey)
 	if contentId == "" {
 		return false, fmt.Errorf("content id not found in context")
 	}

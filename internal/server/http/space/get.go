@@ -17,7 +17,7 @@ func NewSpaceNotFoundError() model.ErrorResponse {
 }
 
 func getSpaceById(ctx *gin.Context) {
-	id := ctx.GetString("space_id")
+	id := ctx.Param("space_id")
 	spaceResult, err := space.GetSpaceById(ctx, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

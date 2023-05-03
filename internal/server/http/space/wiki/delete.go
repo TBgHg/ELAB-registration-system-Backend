@@ -16,8 +16,8 @@ func NewNotFoundError() model.ErrorResponse {
 }
 
 func deleteWikiById(ctx *gin.Context) {
-	wikiId := ctx.GetString("wiki_id")
-	spaceId := ctx.GetString("space_id")
+	wikiId := ctx.Param("wiki_id")
+	spaceId := ctx.Param("space_id")
 	exists, err := wiki.CheckExistsById(ctx, spaceId, wikiId)
 	if err != nil {
 		slog.Error("error in wiki.CheckExistsById, %w", err)

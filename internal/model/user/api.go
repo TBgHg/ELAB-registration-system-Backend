@@ -67,7 +67,7 @@ func GetUser(ctx *gin.Context) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	openid := ctx.GetString("openid")
+	openid := ctx.Param("openid")
 	userMatch := token.Subject == openid
 	user := User{}
 	db := svc.MySQL.WithContext(ctx).Model(&User{

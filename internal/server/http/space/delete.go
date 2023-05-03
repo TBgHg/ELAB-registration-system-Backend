@@ -18,7 +18,7 @@ func NewNotSpaceOwnerError() model.ErrorResponse {
 // deleteSpaceById 根据ID删除空间
 // 要求：用户必须是空间的创建者
 func deleteSpaceById(ctx *gin.Context) {
-	spaceId := ctx.GetString("space_id")
+	spaceId := ctx.Param("space_id")
 	position, err := member.GetSpacePosition(ctx, spaceId)
 	if err != nil {
 		slog.Error("error in space.CheckIsSpaceOwner, %w", err)

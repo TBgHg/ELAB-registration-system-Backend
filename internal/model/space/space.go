@@ -77,3 +77,55 @@ type Space struct {
 type OperationResponse struct {
 	Ok bool `json:"ok"`
 }
+
+type UserSpaceListResponse struct {
+	Spaces []Space `json:"spaces"`
+}
+
+func GetUserSpaces(ctx *gin.Context) (*[]Space, error) {
+	// 获取用户加入的空间，若access token和openid一致，显示全部内容，若不一致，仅显示private: false的空间
+	svc := service.GetService()
+	token, err := svc.Oidc.GetToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	openid := ctx.Param("openid")
+	userMatch := token.Subject == openid
+	// 构建一个比较复杂的SQL查询：
+	// Member当中，OpenId = openid
+	// Space当中，ContentId = Member.SpaceId, Private = false
+	db := svc.MySQL.Model(&Space{}).InnerJoins("members", "members.space_id = spaces.space_id").Where(&member.Member{OpenId: openid})
+	if !userMatch {
+		db = db.Where(&Space{Private: false})
+	}
+	var spaces []Space
+	err = db.Find(&spaces).Error
+	if err != nil {
+		return nil, err
+	}
+	return &spaces, nil
+}
+
+//func GetUserSpacesId(ctx *gin.Context) (*[]string, error) {
+//	// 获取用户加入的空间，若access token和openid一致，显示全部内容，若不一致，仅显示private: false的空间
+//	svc := service.GetService()
+//	token, err := svc.Oidc.GetToken(ctx)
+//	if err != nil {
+//		return nil, err
+//	}
+//	openid := ctx.Param("openid")
+//	userMatch := token.Subject == openid
+//	// 构建一个比较复杂的SQL查询：
+//	// Member当中，OpenId = openid
+//	// Space当中，ContentId = Member.SpaceId, Private = false
+//	db := svc.MySQL.Model(&Space{}).InnerJoins("members", "members.space_id = space.space_id").Where(&member.Member{OpenId: openid})
+//	if !userMatch {
+//		db = db.Where(&Space{Private: false})
+//	}
+//	var spaces []Space
+//	err = db.Find(&spaces).Error
+//	if err != nil {
+//		return nil, err
+//	}
+//	return &spaces, nil
+//}

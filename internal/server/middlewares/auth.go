@@ -85,8 +85,8 @@ func OAuthSelfValidationMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		slog.DebugCtx(ctx, "OAuthSelfValidationMiddleware")
 		svc := service.GetService()
-		uuid, exists := ctx.Get("uuid")
-		if !exists {
+		uuid := ctx.Param("uuid")
+		if uuid == "" {
 			ctx.AbortWithStatusJSON(403, NewUuidOidcSubMismatchErrorResponse())
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "unauthorized")
 			return
@@ -101,7 +101,7 @@ func OAuthSelfValidationMiddleware() gin.HandlerFunc {
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "get_userinfo_failed", "detail", err)
 			return
 		}
-		if userInfo.Subject != uuid.(string) {
+		if userInfo.Subject != uuid {
 			ctx.AbortWithStatusJSON(403, NewJwtInvalidErrorResponse())
 			slog.DebugCtx(ctx, "aborted with status 403", "error", "jwt_invalid", "detail", err)
 		}

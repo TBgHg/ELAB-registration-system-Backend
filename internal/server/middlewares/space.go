@@ -45,7 +45,7 @@ func NewNoPermissionError() model.ErrorResponse {
 
 func SpaceIdRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		spaceId := ctx.GetString("space_id")
+		spaceId := ctx.Param("space_id")
 		if spaceId == "" {
 			ctx.AbortWithStatusJSON(400, NewSpaceIdRequiredError())
 			return
@@ -56,7 +56,7 @@ func SpaceIdRequiredMiddleware() gin.HandlerFunc {
 
 func SpacePublicPermissionMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		spaceId := ctx.GetString("space_id")
+		spaceId := ctx.Param("space_id")
 		permission, err := space.CheckIsSpacePublicPermissionGranted(ctx, spaceId)
 		if err != nil {
 			slog.Error("error in space.CheckIsSpacePublicPermissionGranted, %w", err)
@@ -74,7 +74,7 @@ func SpacePublicPermissionMiddleware() gin.HandlerFunc {
 func SpacePrivatePermissionMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// 判断用户是否为Space成员
-		spaceId := ctx.GetString("space_id")
+		spaceId := ctx.Param("space_id")
 		permission, err := space.CheckIsSpacePrivatePermissionGranted(ctx, spaceId)
 		if err != nil {
 			slog.Error("error in space.CheckIsSpacePrivatePermissionGranted, %w", err)
@@ -91,7 +91,7 @@ func SpacePrivatePermissionMiddleware() gin.HandlerFunc {
 
 func WikiIdRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		wikiId := ctx.GetString("wiki_id")
+		wikiId := ctx.Param("wiki_id")
 		if wikiId == "" {
 			ctx.AbortWithStatusJSON(400, NewWikiIdRequiredError())
 			return
@@ -102,7 +102,7 @@ func WikiIdRequiredMiddleware() gin.HandlerFunc {
 
 func ThreadIdRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		threadId := ctx.GetString("thread_id")
+		threadId := ctx.Param("thread_id")
 		if threadId == "" {
 			ctx.AbortWithStatusJSON(400, NewThreadIdRequiredError())
 			return
@@ -113,7 +113,7 @@ func ThreadIdRequiredMiddleware() gin.HandlerFunc {
 
 func CommentIdRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		commentId := ctx.GetString("comment_id")
+		commentId := ctx.Param("comment_id")
 		if commentId == "" {
 			ctx.AbortWithStatusJSON(400, NewCommentIdRequiredError())
 			return

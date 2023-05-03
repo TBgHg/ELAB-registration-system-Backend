@@ -8,7 +8,7 @@ import (
 )
 
 func getMemberList(ctx *gin.Context) {
-	spaceId := ctx.GetString("space_id")
+	spaceId := ctx.Param("space_id")
 	members, err := member.GetSpaceMemberList(ctx, spaceId)
 	if err != nil {
 		slog.Error("error in space.GetSpaceMemberList, %w", err)

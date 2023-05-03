@@ -9,12 +9,12 @@ func ApplyGroup(engine *gin.RouterGroup) {
 	group := engine.Group("/user/:openid")
 	group.Use(middlewares.UserOpenidRequiredMiddleware(), middlewares.OAuthLoginRequiredMiddleware())
 	{
-		group.GET("/", getUser)
+		group.GET("", getUser)
 		group.PATCH(
-			"/",
+			"",
 			middlewares.OAuthSelfValidationMiddleware(),
 			updateUser,
 		)
-		//group.GET("/spaces", getUserSpaces)
+		group.GET("/spaces", getUserSpaces)
 	}
 }
