@@ -74,7 +74,7 @@ func GetUser(ctx *gin.Context) (*User, error) {
 		OpenId: openid,
 	})
 	if userMatch {
-		db = db.Select("openid, name, group")
+		db = db.Select("openid, name, `group`")
 	}
 	err = db.First(&user).Error
 	if err != nil {
