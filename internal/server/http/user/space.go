@@ -22,7 +22,7 @@ func getUserSpaces(ctx *gin.Context) {
 			ctx.JSON(404, NewSpaceNotFoundError())
 			return
 		}
-		slog.Error("user.GetUserSpaces failed %w", err)
+		slog.Error("user.GetUserSpaces failed", "error", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
