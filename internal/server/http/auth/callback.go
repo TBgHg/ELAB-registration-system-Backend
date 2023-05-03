@@ -22,7 +22,6 @@ func SetCallbackResponseParams(query *url.Values, params auth.CallbackResponse) 
 	query.Set("access_token", params.AccessToken)
 	query.Set("refresh_token", params.RefreshToken)
 	query.Set("state", params.State)
-	query.Set("code_verifier", params.CodeVerifier)
 }
 
 // callback 使用 code 换取 token
@@ -66,7 +65,6 @@ func callback(ctx *gin.Context) {
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
 		State:        params.State,
-		CodeVerifier: session.CodeVerifier,
 	}
 	query := redirectUrl.Query()
 	SetCallbackResponseParams(&query, responseParams)

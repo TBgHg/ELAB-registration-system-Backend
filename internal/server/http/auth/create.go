@@ -16,7 +16,7 @@ func createLoginSession(ctx *gin.Context) {
 	params := auth.NewSessionRequest{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
-		slog.Error("ctx.ShouldBind failed: %w", err)
+		slog.Error("ctx.ShouldBind failed", "error", err)
 		ctx.JSON(400, model.NewInvalidParamError())
 		return
 	}

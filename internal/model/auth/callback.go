@@ -10,5 +10,4 @@ type CallbackResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	State        string `json:"state"`
-	CodeVerifier string `json:"code_verifier"`
 }
