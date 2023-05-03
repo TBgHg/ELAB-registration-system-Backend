@@ -21,7 +21,7 @@ func CheckExistsById(ctx *gin.Context, options *CheckExistsByIdOptions) (bool, e
 	}
 	svc := service.GetService()
 	var count int64
-	err := svc.MySQL.WithContext(ctx).Model(&targetContent).Count(&count).Error
+	err := svc.MySQL.WithContext(ctx).Model(&Content{}).Where(&targetContent).Count(&count).Error
 	return count > 0, err
 }
 
@@ -41,7 +41,7 @@ func CheckHistoryExistsById(ctx *gin.Context, options *CheckHistoryExistsByIdOpt
 	}
 	svc := service.GetService()
 	var count int64
-	err := svc.MySQL.WithContext(ctx).Model(&targetHistory).Count(&count).Error
+	err := svc.MySQL.WithContext(ctx).Model(&History{}).Where(&targetHistory).Count(&count).Error
 	return count > 0, err
 }
 

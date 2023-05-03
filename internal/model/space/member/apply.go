@@ -65,7 +65,7 @@ func acceptApply(ctx *gin.Context, request *OperateRequest) error {
 		err = fmt.Errorf("apply not exists")
 		return err
 	}
-	err = svc.MySQL.WithContext(ctx).Model(&Apply{
+	err = svc.MySQL.WithContext(ctx).Model(&Apply{}).Where(&Apply{
 		SpaceId: request.SpaceId,
 		OpenId:  request.OpenId,
 		Status:  Pending,

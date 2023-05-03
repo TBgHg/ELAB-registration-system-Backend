@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"crypto/sha256"
 	"elab-backend/internal/model"
 	"elab-backend/internal/model/auth"
 	"fmt"
@@ -17,21 +16,17 @@ func createLoginSession(ctx *gin.Context) {
 	params := auth.NewSessionRequest{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
+		slog.Error("ctx.ShouldBind failed: %w", err)
 		ctx.JSON(400, model.NewInvalidParamError())
 		return
 	}
-	// 使用SHA256对codeChallenge进行编码
-	hash := sha256.New()
-	hash.Write([]byte(params.CodeChallenge))
-	codeChallenge := hash.Sum(nil)
 	// 构造Redis Key
-	key := auth.SessionUriScheme + params.State
 	session := auth.Session{
 		RedirectUri:  params.RedirectUri,
-		CodeVerifier: string(codeChallenge),
+		CodeVerifier: params.Verifier,
 	}
 	// 将codeVerifier存储到Redis中
-	err = auth.SetAuthSession(ctx, key, &session)
+	err = auth.SetAuthSession(ctx, params.State, &session)
 	if err != nil {
 		err = fmt.Errorf("svc.Redis.SetAuthSession failed: %w", err)
 		slog.Error(err.Error())

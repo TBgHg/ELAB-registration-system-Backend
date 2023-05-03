@@ -1,8 +1,6 @@
 package user
 
 import (
-	"elab-backend/internal/model/space"
-	"elab-backend/internal/model/space/member"
 	"elab-backend/internal/service"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -85,34 +83,9 @@ func GetUser(ctx *gin.Context) (*User, error) {
 	return &user, nil
 }
 
-func GetUserSpaces(ctx *gin.Context) (*[]space.Space, error) {
-	// 获取用户加入的空间，若access token和openid一致，显示全部内容，若不一致，仅显示private: false的空间
-	svc := service.GetService()
-	token, err := svc.Oidc.GetToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	openid := ctx.GetString("openid")
-	userMatch := token.Subject == openid
-	// 构建一个比较复杂的SQL查询：
-	// Member当中，OpenId = openid
-	// Space当中，ContentId = Member.SpaceId, Private = false
-	db := svc.MySQL.Model(&space.Space{}).Joins(
-		"JOIN member ON member.space_id = space.id").Where(&member.Member{OpenId: openid})
-	if !userMatch {
-		db = db.Where(&space.Space{Private: false})
-	}
-	var spaces []space.Space
-	err = db.Find(&spaces).Error
-	if err != nil {
-		return nil, err
-	}
-	return &spaces, nil
-}
-
 func UpdateUserLastLogin(ctx *gin.Context, openid string) error {
 	svc := service.GetService()
-	err := svc.MySQL.WithContext(ctx).Model(&User{
+	err := svc.MySQL.WithContext(ctx).Model(&User{}).Where(&User{
 		OpenId: openid,
 	}).Updates(&User{
 		LastLoginAt: time.Now().UTC().Unix(),
@@ -122,7 +95,7 @@ func UpdateUserLastLogin(ctx *gin.Context, openid string) error {
 
 func UpdateUser(ctx *gin.Context, openid string, updateBody User) error {
 	svc := service.GetService()
-	err := svc.MySQL.WithContext(ctx).Model(&User{
+	err := svc.MySQL.WithContext(ctx).Model(&User{}).Where(&User{
 		OpenId: openid,
 	}).Updates(&updateBody).Error
 	return err

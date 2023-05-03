@@ -20,7 +20,7 @@ func NewService(conf *configs.Config) (*gorm.DB, error) {
 		mysql.Open(dsn),
 	)
 	if err != nil {
-		slog.Error("gorm.Open failed %w", err)
+		slog.Error("gorm.Open failed", "error", err)
 		return nil, err
 	}
 	return db, nil

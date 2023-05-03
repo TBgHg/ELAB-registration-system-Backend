@@ -51,7 +51,7 @@ func UpdateContent(ctx *gin.Context, options *UpdateContentOptions) error {
 		Meta:        string(marshalledHistoryMeta),
 	}
 	err = svc.MySQL.Transaction(func(tx *gorm.DB) error {
-		err := tx.WithContext(ctx).Model(&targetContent).Updates(targetContent).Error
+		err := tx.WithContext(ctx).Model(&Content{}).Where(&targetContent).Updates(targetContent).Error
 		if err != nil {
 			return err
 		}

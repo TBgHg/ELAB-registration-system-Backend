@@ -15,6 +15,6 @@ func ApplyGroup(engine *gin.RouterGroup) {
 			middlewares.OAuthSelfValidationMiddleware(),
 			updateUser,
 		)
-		group.GET("/spaces", getUserSpaces)
+		//group.GET("/spaces", getUserSpaces)
 	}
 }

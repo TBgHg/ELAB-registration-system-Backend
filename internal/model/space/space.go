@@ -52,7 +52,7 @@ func CheckIsSpacePrivatePermissionGranted(ctx *gin.Context, spaceId string) (boo
 		OpenId:  token.Subject,
 	}
 	var counts int64
-	err = svc.MySQL.WithContext(ctx).Model(&targetMember).Count(&counts).Error
+	err = svc.MySQL.WithContext(ctx).Model(&member.Member{}).Where(&targetMember).Count(&counts).Error
 	if err != nil {
 		return false, err
 	}
@@ -65,7 +65,7 @@ func CheckIsSpacePrivatePermissionGranted(ctx *gin.Context, spaceId string) (boo
 type Space struct {
 	gorm.Model `json:"-"` // 隐藏gorm.Model
 	// SpaceId 空间的唯一标识符
-	SpaceId string `json:"space_id" binding:"uuid"`
+	SpaceId string `json:"space_id"`
 	// Name 空间的名称
 	Name string `json:"name"`
 	// Description 空间的描述

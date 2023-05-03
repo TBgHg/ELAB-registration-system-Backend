@@ -52,6 +52,7 @@ func GetAuthSession(ctx *gin.Context, state string) (*Session, error) {
 		slog.Error(err.Error())
 		return nil, err
 	}
+	slog.Info(marshalledSession)
 	session := Session{}
 	// 使用JSON解析
 	err = json.Unmarshal([]byte(marshalledSession), &session)
@@ -75,9 +76,9 @@ const SessionExpiration = time.Minute * 10
 // NewSessionRequest 使用State首先存储RedirectUri和code_verifier
 // 用于 POST /auth/new
 type NewSessionRequest struct {
-	State         string `json:"state" binding:"required"`
-	RedirectUri   string `json:"redirect_uri" binding:"required"`
-	CodeChallenge string `json:"code_challenge" binding:"required"`
+	State       string `json:"state" binding:"required"`
+	RedirectUri string `json:"redirect_uri" binding:"required"`
+	Verifier    string `json:"code_verifier" binding:"required"`
 }
 
 type Session struct {

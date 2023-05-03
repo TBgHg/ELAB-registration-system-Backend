@@ -1,7 +1,6 @@
 package user
 
 import (
-	"elab-backend/internal/model/space"
 	"gorm.io/gorm"
 )
 
@@ -29,6 +28,6 @@ type User struct {
 	Email string `json:"email"`
 }
 
-type SpaceListResponse struct {
-	Spaces []space.Space `json:"spaces"`
-}
+//type SpaceListResponse struct {
+//	Spaces []space.Space `json:"spaces"`
+//}

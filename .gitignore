@@ -174,3 +174,5 @@ Temporary Items
 /.idea/elab-backend.iml
 /.idea/modules.xml
 /.idea/vcs.xml
+
+./configs/config.toml

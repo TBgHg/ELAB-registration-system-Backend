@@ -2,10 +2,13 @@ package main
 
 import (
 	"elab-backend/configs"
+	"elab-backend/internal/model"
 	"elab-backend/internal/server/http/server"
 	"elab-backend/internal/service"
 	"flag"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/exp/slog"
+	"os"
 )
 
 var configDirectory string
@@ -28,6 +31,12 @@ func main() {
 	}
 	engine := gin.Default()
 	server.Init(engine)
+	gin.SetMode(gin.DebugMode)
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr)))
+	err = model.Init()
+	if err != nil {
+		panic(err)
+	}
 	err = engine.Run(configs.GetConfig().Http.BindAddress)
 	if err != nil {
 		panic(err)

@@ -12,6 +12,7 @@ func createSpace(ctx *gin.Context) {
 	spaceRequest := space.Space{}
 	err := ctx.ShouldBind(&spaceRequest)
 	if err != nil {
+		slog.Error("error in ctx.ShouldBind", "error", err)
 		ctx.JSON(400, model.NewInvalidParamError())
 		return
 	}
@@ -21,7 +22,7 @@ func createSpace(ctx *gin.Context) {
 	}
 	err = space.CreateSpace(ctx, &spaceRequest)
 	if err != nil {
-		slog.Error("error in space.CreateSpace, %w", err)
+		slog.Error("error in space.CreateSpace", "error", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}

@@ -11,6 +11,11 @@ import (
 
 func Init(engine *gin.Engine) {
 	group := engine.Group("/v1")
+	group.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 	engine.Use(gin.Logger(), gin.Recovery(), requestid.New())
 	auth.ApplyGroup(group)
 	user.ApplyGroup(group)

@@ -10,6 +10,7 @@ import (
 
 func ApplyGroup(engine *gin.RouterGroup) {
 	group := engine.Group("/space")
+	group.Use(middlewares.OAuthLoginRequiredMiddleware())
 	{
 		group.GET("", searchSpace)
 		group.POST("", createSpace)

@@ -30,6 +30,7 @@ func callback(ctx *gin.Context) {
 	params := auth.CallbackRequest{}
 	err := ctx.ShouldBind(&params)
 	if err != nil {
+		slog.Error("ctx.ShouldBind failed", "error", err)
 		ctx.JSON(400, model.NewInvalidParamError())
 		return
 	}
@@ -38,17 +39,19 @@ func callback(ctx *gin.Context) {
 	session, err := auth.GetAuthSession(ctx, params.State)
 	if err != nil {
 		if errors.Is(err, auth.SessionNotFoundError{}) {
+			slog.Error("auth.GetAuthSession failed", "error", err)
 			ctx.JSON(404, NewSessionNotFoundError())
 			return
 		}
-		slog.ErrorCtx(ctx, "redis.GetAuthSession failed %w", err)
+		slog.ErrorCtx(ctx, "redis.GetAuthSession failed", "error", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
 	// 使用code换取token
 	token, err := svc.Oidc.TokenExchange(ctx, params.Code, session.CodeVerifier)
 	if err != nil {
-		slog.ErrorCtx(ctx, "oidc.TokenExchange failed %w", err)
+		slog.ErrorCtx(ctx, "oidc.TokenExchange failed", "error", err)
+		slog.Error("code_verifier %v", session.CodeVerifier)
 		ctx.JSON(500, model.NewInternalServerError())
 	}
 	ctx.Set("access_token", token.AccessToken)
@@ -70,21 +73,21 @@ func callback(ctx *gin.Context) {
 	redirectUrl.RawQuery = query.Encode()
 	err = user.HandleAuthCallback(ctx)
 	if err != nil {
-		slog.ErrorCtx(ctx, "HandleAuthCallback failed %w", err)
+		slog.ErrorCtx(ctx, "HandleAuthCallback failed", "error", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
 	// 再获取一次IdToken...
 	idToken, err := svc.Oidc.GetToken(ctx)
 	if err != nil {
-		slog.ErrorCtx(ctx, "oidc.GetToken failed %w", err)
+		slog.ErrorCtx(ctx, "oidc.GetToken failed", "error", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
 	// 更新用户最后一次登陆时间
 	err = user.UpdateUserLastLogin(ctx, idToken.Subject)
 	if err != nil {
-		slog.ErrorCtx(ctx, "user.UpdateUserLastLogin failed %w", err)
+		slog.ErrorCtx(ctx, "user.UpdateUserLastLogin failed", "error", err)
 		ctx.JSON(500, model.NewInternalServerError())
 		return
 	}
